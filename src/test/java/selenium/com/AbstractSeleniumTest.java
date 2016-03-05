@@ -3,14 +3,20 @@ package selenium.com;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import selenium.com.WebDriverFactory.Browser;
 
+/**
+ * SeleniumTest抽象クラス
+ * @author 7days
+ */
 public abstract class AbstractSeleniumTest {
 
     /** ロガー */
@@ -56,6 +62,36 @@ public abstract class AbstractSeleniumTest {
      */
     protected WebElement $buttonVal(String value) {
         return driver.findElement(By.cssSelector("input[type='button'][value='" + value + "']"));
+    }
+
+    /**
+     * エレメント取得(selectBox)
+     * @param by
+     * @return Select
+     */
+    protected Select $select(By by) {
+        return new Select(driver.findElement(by));
+    }
+
+    /**
+     * エレメント取得(alert)
+     * @return Alert
+     */
+    protected Alert $alert() {
+        return driver.switchTo().alert();
+    }
+
+    /**
+     * Sleep処理
+     * @param second 秒
+     */
+    public void sleep(long second) {
+        try {
+            // TODO かっこ悪い
+            Thread.sleep(second * 1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

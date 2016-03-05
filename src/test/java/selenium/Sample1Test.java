@@ -11,20 +11,23 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import selenium.com.AbstractSeleniumTest;
 import selenium.com.Capture;
-import selenium.com.DateUtil;
 import selenium.com.WebDriverFactory;
 import selenium.com.WebDriverFactory.Browser;
+import selenium.util.DateUtil;
 
-public class SeleniumTest extends AbstractSeleniumTest {
+/**
+ * サンプルテスト１
+ * @author 7days
+ */
+public class Sample1Test extends AbstractSeleniumTest {
 
     /** ロガー */
-    private static final Logger logger = LoggerFactory.getLogger(SeleniumTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(Sample1Test.class);
 
     @BeforeClass
     public static void init() {
@@ -116,7 +119,7 @@ public class SeleniumTest extends AbstractSeleniumTest {
         assertEquals(driver.getTitle(), "マニフェスト予約・登録");
 
         // ルート名称コンボボックスの選択
-        new Select($(By.id("ROUTE_CD"))).selectByVisibleText("動作確認用、廃プラスチック類（ノーマル）");
+        $select(By.id("ROUTE_CD")).selectByVisibleText("動作確認用、廃プラスチック類（ノーマル）");
 
         capture.screenShot();
 
@@ -147,16 +150,16 @@ public class SeleniumTest extends AbstractSeleniumTest {
         $buttonVal("登　録").click();
 
         // アラートダイアログ表示まで待機し、OKを選択
-        driver.switchTo().alert().accept();
+        $alert().accept();
 
-        Thread.sleep(2 * 1000);
+        sleep(2);
 
         /*
          * マニフェスト予約・登録画面 ------------------------------------------------
          */
         // アラートダイアログ表示まで待機し、OKを選択
         {
-            Alert alert = driver.switchTo().alert();
+            Alert alert = $alert();
             capture.screenShotAlertMsg(alert);
             alert.accept();
         }

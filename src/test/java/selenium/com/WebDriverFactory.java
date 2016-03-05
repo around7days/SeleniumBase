@@ -1,5 +1,7 @@
 package selenium.com;
 
+import java.util.concurrent.TimeUnit;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
@@ -12,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * WebDriverFactoryクラス
- * @author panasonic
+ * @author 7days
  */
 public class WebDriverFactory {
     /** Logger */
@@ -45,21 +47,32 @@ public class WebDriverFactory {
         switch (browser) {
         case IE:
             logger.debug("create driver : {}", InternetExplorerDriver.class.getName());
+            // ドライバー設定
             System.setProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY, prop.getString("driver.url.ie"));
-            // TODO 必要？
+            // XXX 保護モードチェックエラースルー？
             DesiredCapabilities capability = DesiredCapabilities.internetExplorer();
             capability.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+            // 生成
             driver = new InternetExplorerDriver();
             break;
         case CHROME:
             logger.debug("create driver : {}", ChromeDriver.class.getName());
+            // ドライバー設定
             System.setProperty(ChromeDriverService.CHROME_DRIVER_EXE_PROPERTY, prop.getString("driver.url.chrome"));
+            // 生成
             driver = new ChromeDriver();
             break;
         case FIREFOX:
             logger.debug("create driver : {}", FirefoxDriver.class.getName());
+            // 生成
             driver = new FirefoxDriver();
             break;
+        }
+
+        // 暗黙的な待機(秒)の設定
+        String implicitWait = prop.getString("implicit.wait");
+        if (implicitWait != null && !implicitWait.isEmpty()) {
+            driver.manage().timeouts().implicitlyWait(Integer.valueOf(implicitWait), TimeUnit.SECONDS);
         }
 
         return driver;

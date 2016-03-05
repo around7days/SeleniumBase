@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * PropertyManagerクラス<br>
  * （シングルトン）
+ * @author 7days
  */
 public enum SeleniumPropertyManager {
     INSTANCE;

@@ -1,4 +1,4 @@
-package selenium.com;
+package selenium.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 日付操作の共通クラス<br>
- * @author panasonic
+ * @author 7days
  */
 public class DateUtil {
 

@@ -18,15 +18,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Captureクラス
- * @author panasonic
+ * @author 7days
  */
 public class Capture {
 
     /** ロガー */
     private static final Logger logger = LoggerFactory.getLogger(Capture.class);
 
-    /** 出力先ディレクトリ */
-    private static Path outputDir = Paths.get("./capture");
+    /** 出力先ディレクトリパス（デフォルト） */
+    private static final String OUTPUT_DIR_DEFAULT = "./capture";
     /** ファイル名：拡張子（画像） */
     private static final String IMAGE_EXTENSION = ".jpg";
     /** ファイル名：拡張子（テキスト） */
@@ -36,6 +36,8 @@ public class Capture {
     private WebDriver driver = null;
     /** ファイル名：接頭語 */
     private String prefix = "";
+    /** 出力先ディレクトリ */
+    private static Path outputDir = Paths.get(OUTPUT_DIR_DEFAULT);
 
     /**
      * コンストラクタ
@@ -47,7 +49,6 @@ public class Capture {
 
     /**
      * キャプチャ取得（名前自動）
-     * @param path
      * @throws IOException
      */
     public void screenShot() throws IOException {
@@ -84,7 +85,7 @@ public class Capture {
     /**
      * キャプチャ取得（名前自動）<br>
      * 　　※アラートメッセージ専用
-     * @param path
+     * @param alert
      * @throws IOException
      */
     public void screenShotAlertMsg(Alert alert) throws IOException {
@@ -102,11 +103,10 @@ public class Capture {
     }
 
     /**
-     * 現在時刻の取得
-     * @return
+     * 出力先ディレクトリ生成
      */
-    private static String getTime() {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
+    public void createOutputDir() {
+        outputDir.toFile().mkdirs();
     }
 
     /**
@@ -124,4 +124,13 @@ public class Capture {
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
+
+    /**
+     * 現在時刻の取得
+     * @return
+     */
+    private static String getTime() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
+    }
+
 }
