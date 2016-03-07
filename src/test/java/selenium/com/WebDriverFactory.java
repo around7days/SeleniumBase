@@ -2,6 +2,8 @@ package selenium.com;
 
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
@@ -36,14 +38,12 @@ public class WebDriverFactory {
      * @return WebDriver
      */
     public static WebDriver create(Browser browser) {
-        // デフォルトブラウザとしてIEを設定
-        if (browser == null) {
-            browser = Browser.IE;
-        }
 
         WebDriver driver = null;
 
-        // WebDriverの生成
+        /*
+         * WebDriverの生成
+         */
         switch (browser) {
         case IE:
             logger.debug("create driver : {}", InternetExplorerDriver.class.getName());
@@ -69,10 +69,43 @@ public class WebDriverFactory {
             break;
         }
 
-        // 暗黙的な待機(秒)の設定
-        String implicitWait = prop.getString("implicit.wait");
-        if (implicitWait != null && !implicitWait.isEmpty()) {
-            driver.manage().timeouts().implicitlyWait(Integer.valueOf(implicitWait), TimeUnit.SECONDS);
+        /*
+         * ディスプレイ位置
+         */
+        {
+            String x = prop.getString("display.position.x");
+            String y = prop.getString("display.position.y");
+            if (!x.isEmpty() && !y.isEmpty()) {
+                driver.manage().window().setPosition(new Point(Integer.valueOf(x), Integer.valueOf(y)));
+            }
+        }
+
+        /*
+         * ディスプレイサイズ
+         */
+        {
+            String maximize = prop.getString("display.size.maximize");
+            String width = prop.getString("display.size.width");
+            String height = prop.getString("display.size.height");
+            if (Boolean.valueOf(maximize)) {
+                // 最大化
+                driver.manage().window().maximize();
+            } else {
+                // サイズ指定
+                if (!width.isEmpty() && !height.isEmpty()) {
+                    driver.manage().window().setSize(new Dimension(Integer.valueOf(width), Integer.valueOf(height)));
+                }
+            }
+        }
+
+        /*
+         * 暗黙的な待機(秒)の設定
+         */
+        {
+            String waitSecond = prop.getString("wait.implicit");
+            if (!waitSecond.isEmpty()) {
+                driver.manage().timeouts().implicitlyWait(Integer.valueOf(waitSecond), TimeUnit.SECONDS);
+            }
         }
 
         return driver;

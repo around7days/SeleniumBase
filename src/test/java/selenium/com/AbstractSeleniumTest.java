@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import selenium.com.WebDriverFactory.Browser;
 public abstract class AbstractSeleniumTest {
 
     /** ロガー */
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(AbstractSeleniumTest.class);
 
     /** プロパティ */
@@ -37,13 +39,6 @@ public abstract class AbstractSeleniumTest {
             if (Boolean.valueOf(prop.getString("execute.browser.firefox"))) add(Browser.FIREFOX);
         }
     };
-
-    /**
-     * システムプロパティ設定
-     */
-    protected void setSystemProperty() {
-        logger.debug("システムプロパティ設定");
-    }
 
     /**
      * エレメント取得
@@ -82,16 +77,31 @@ public abstract class AbstractSeleniumTest {
     }
 
     /**
-     * Sleep処理
-     * @param second 秒
+     * WebDriverWaitの生成<br>
+     * （明示的な待機）
+     * @return WebDriverWait
      */
-    public void sleep(long second) {
-        try {
-            // TODO かっこ悪い
-            Thread.sleep(second * 1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    public static WebDriverWait $wait() {
+        String waitDefault = prop.getString("wait.explicit.default");
+        return $wait(Integer.valueOf(waitDefault));
     }
 
+    /**
+     * WebDriverWaitの生成<br>
+     * （明示的な待機）
+     * @param seconds 待機秒
+     * @return WebDriverWait
+     */
+    public static WebDriverWait $wait(int seconds) {
+        return new WebDriverWait(driver, seconds);
+    }
+
+    /**
+     * Sleep処理
+     * @param second 秒
+     * @throws InterruptedException
+     */
+    protected void sleep(int second) throws InterruptedException {
+        Thread.sleep(second * 1000);
+    }
 }

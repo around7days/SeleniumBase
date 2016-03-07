@@ -31,20 +31,22 @@ public class Sample1Test extends AbstractSeleniumTest {
 
     @BeforeClass
     public static void init() {
-        logger.debug("---------- 処理開始 ----------");
+        logger.info("---------- 処理開始(class) ----------");
     }
 
     @Before
     public void before() throws Exception {
+        logger.info("---------- 処理開始(test) ----------");
     }
 
     @After
     public void after() throws Exception {
+        logger.info("---------- 処理終了(test) ----------");
     }
 
     @AfterClass
     public static void finish() {
-        logger.debug("---------- 処理終了 ----------");
+        logger.info("---------- 処理終了(class) ----------");
     }
 
     /**
@@ -60,6 +62,8 @@ public class Sample1Test extends AbstractSeleniumTest {
             driver = WebDriverFactory.create(browser);
 
             No1_1次マニフェスト登録();
+
+            sleep(3);
 
             /* Webブラウザの終了 */
             driver.quit();
@@ -151,8 +155,6 @@ public class Sample1Test extends AbstractSeleniumTest {
 
         // アラートダイアログ表示まで待機し、OKを選択
         $alert().accept();
-
-        sleep(2);
 
         /*
          * マニフェスト予約・登録画面 ------------------------------------------------

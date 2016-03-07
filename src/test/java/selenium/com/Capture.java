@@ -52,9 +52,8 @@ public class Capture {
      * @throws IOException
      */
     public void screenShot() throws IOException {
-
         // 自動ファイル名
-        String fileNm = prefix + getTime() + IMAGE_EXTENSION;
+        String fileNm = prefix + getSysDateTime() + IMAGE_EXTENSION;
         Path path = outputDir.resolve(fileNm);
 
         screenShot(path);
@@ -66,16 +65,7 @@ public class Capture {
      * @throws IOException
      */
     public void screenShot(Path path) throws IOException {
-
-        // if (driver instanceof HtmlUnitDriver) {
-        // return;
-        // } else if (driver instanceof RemoteWebDriver) {
-        // driver = new Augmenter().augment(driver);
-        // } else {
-        // // 何もしない
-        // }
-
-        logger.debug("capture : {}", path.toAbsolutePath().normalize().toString());
+        logger.debug("capture : {}", path.toString());
 
         // 出力
         TakesScreenshot screen = (TakesScreenshot) driver;
@@ -89,24 +79,16 @@ public class Capture {
      * @throws IOException
      */
     public void screenShotAlertMsg(Alert alert) throws IOException {
-
         // 自動ファイル名
-        String fileNm = prefix + getTime() + TEXT_EXTENSION;
+        String fileNm = prefix + getSysDateTime() + TEXT_EXTENSION;
         Path path = outputDir.resolve(fileNm);
 
-        logger.debug("capture : {}", path.toAbsolutePath().normalize().toString());
+        logger.debug("capture : {}", path.toString());
 
         // 出力
         try (BufferedWriter bw = Files.newBufferedWriter(path, StandardOpenOption.CREATE_NEW)) {
             bw.write(alert.getText());
         }
-    }
-
-    /**
-     * 出力先ディレクトリ生成
-     */
-    public void createOutputDir() {
-        outputDir.toFile().mkdirs();
     }
 
     /**
@@ -126,10 +108,17 @@ public class Capture {
     }
 
     /**
+     * 出力先ディレクトリ生成
+     */
+    public void createOutputDir() {
+        outputDir.toFile().mkdirs();
+    }
+
+    /**
      * 現在時刻の取得
      * @return
      */
-    private static String getTime() {
+    private String getSysDateTime() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
     }
 
