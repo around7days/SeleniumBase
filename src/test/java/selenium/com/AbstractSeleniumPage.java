@@ -20,10 +20,10 @@ public abstract class AbstractSeleniumPage {
     private static final Logger logger = LoggerFactory.getLogger(AbstractSeleniumPage.class);
 
     /** プロパティ */
-    protected static SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
+    protected static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
 
     /** WebDriver */
-    protected WebDriver driver = null;
+    protected static final WebDriver driver = WebDriverManager.INSTANCE.getDriver();
 
     /**
      * エレメント取得

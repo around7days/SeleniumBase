@@ -23,13 +23,22 @@ public class WebDriverFactory {
     private static final Logger logger = LoggerFactory.getLogger(WebDriverFactory.class);
 
     /** プロパティ */
-    protected static SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
+    protected static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
 
     /**
      * Webブラウザタイプ
      */
     public static enum Browser {
         IE, CHROME, FIREFOX;
+
+        public static Browser getEnum(String str) {
+            for (Browser browser : Browser.values()) {
+                if (browser.name().toLowerCase().equals(str.toLowerCase())) {
+                    return browser;
+                }
+            }
+            return null;
+        }
     }
 
     /**

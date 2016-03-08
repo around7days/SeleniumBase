@@ -1,13 +1,12 @@
 package selenium.com;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import selenium.com.WebDriverFactory.Browser;
 
 /**
  * SeleniumTest抽象クラス
@@ -16,24 +15,35 @@ import selenium.com.WebDriverFactory.Browser;
 public abstract class AbstractSeleniumTest {
 
     /** ロガー */
-    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(AbstractSeleniumTest.class);
 
     /** プロパティ */
-    protected static SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
+    protected static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
 
     /** WebDriver */
-    protected static WebDriver driver = null;
+    protected static final WebDriver driver = WebDriverManager.INSTANCE.getDriver();
 
-    /** 実行ブラウザリスト */
-    protected static List<Browser> browserList = new ArrayList<Browser>() {
-        {
-            /** 実行ブラウザリストの取得 */
-            if (Boolean.valueOf(prop.getString("execute.browser.ie"))) add(Browser.IE);
-            if (Boolean.valueOf(prop.getString("execute.browser.chrome"))) add(Browser.CHROME);
-            if (Boolean.valueOf(prop.getString("execute.browser.firefox"))) add(Browser.FIREFOX);
-        }
-    };
+    @BeforeClass
+    public static void init() {
+        logger.info("---------- 処理開始(class) ----------");
+    }
+
+    @Before
+    public void before() throws Exception {
+        logger.info("---------- 処理開始(test) ----------");
+    }
+
+    @After
+    public void after() throws Exception {
+        logger.info("---------- 処理終了(test) ----------");
+    }
+
+    @AfterClass
+    public static void finish() {
+        logger.info("---------- 処理終了(class) ----------");
+        /* Webブラウザの終了 */
+        driver.quit();
+    }
 
     /**
      * Sleep処理
