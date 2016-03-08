@@ -20,10 +20,10 @@ import org.slf4j.LoggerFactory;
  * Captureクラス
  * @author 7days
  */
-public class Capture {
+public class SeleniumCapture {
 
     /** ロガー */
-    private static final Logger logger = LoggerFactory.getLogger(Capture.class);
+    private static final Logger logger = LoggerFactory.getLogger(SeleniumCapture.class);
 
     /** 出力先ディレクトリパス（デフォルト） */
     private static final String OUTPUT_DIR_DEFAULT = "./capture";
@@ -43,7 +43,7 @@ public class Capture {
      * コンストラクタ
      * @param driver
      */
-    public Capture(WebDriver driver) {
+    public SeleniumCapture(WebDriver driver) {
         this.driver = driver;
     }
 
