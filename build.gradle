@@ -10,6 +10,14 @@ jar {
     }
 }
 
+// Gralde標準外のソースパスを追加
+sourceSets {
+    gen {
+        java      { srcDir 'src/java' }
+        resources { srcDir 'src/resources' }
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -28,7 +36,7 @@ dependencies {
 
     // generate tool
     testCompile group: 'org.jsoup', name: 'jsoup', version: '+'
-    testCompile group: 'org.apache.velocity', name: 'velocity', version: '1.+'
+    testCompile group: 'org.apache.velocity', name: 'velocity', version: '1.7'
 }
 
 test {

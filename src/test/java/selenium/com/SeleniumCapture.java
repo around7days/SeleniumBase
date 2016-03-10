@@ -25,19 +25,21 @@ public class SeleniumCapture {
     /** ロガー */
     private static final Logger logger = LoggerFactory.getLogger(SeleniumCapture.class);
 
-    /** 出力先ディレクトリパス（デフォルト） */
-    private static final String OUTPUT_DIR_DEFAULT = "./capture";
+    /** プロパティ */
+    private static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
+
     /** ファイル名：拡張子（画像） */
     private static final String IMAGE_EXTENSION = ".jpg";
     /** ファイル名：拡張子（テキスト） */
     private static final String TEXT_EXTENSION = ".txt";
 
+    /** 出力先ディレクトリ */
+    private static final Path outputDir = Paths.get(prop.getString("capture.dir"));
+
     /** WebDriver */
     private WebDriver driver = null;
     /** ファイル名：接頭語 */
     private String prefix = "";
-    /** 出力先ディレクトリ */
-    private static Path outputDir = Paths.get(OUTPUT_DIR_DEFAULT);
 
     /**
      * コンストラクタ
@@ -110,7 +112,7 @@ public class SeleniumCapture {
     /**
      * 出力先ディレクトリ生成
      */
-    public void createOutputDir() {
+    public static void createOutputDir() {
         outputDir.toFile().mkdirs();
     }
 
@@ -118,7 +120,7 @@ public class SeleniumCapture {
      * 現在時刻の取得
      * @return
      */
-    private String getSysDateTime() {
+    private static String getSysDateTime() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
     }
 
