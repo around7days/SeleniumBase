@@ -1,14 +1,19 @@
 package generate;
 
+import generate.bean.ItemBean;
+import generate.bean.PageBean;
 import generate.com.GeneratePropertyManager;
+import generate.com.PageConst.FindBy;
+import generate.com.PageConst.Item;
+import generate.com.PageConst.ItemAttr;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -29,9 +34,15 @@ public class GeneratePageObject {
     private static final GeneratePropertyManager prop = GeneratePropertyManager.INSTANCE;
 
     /** 暫定定数 */
-    private String inputFileNm = "入力フォーム サンプル.html";
-    private String outputFileNm = "pageObject.java";
+    private static final String inputFileNm = "入力フォーム サンプル.html";
+    private static final String outputFileNm = "SamplePage.java";
+    private static final String outputClassNm = "SamplePage";
+    private static final String dummyCd = "dummy";
 
+    /**
+     * 起動
+     * @param args
+     */
     public static void main(String[] args) {
 
         try {
@@ -71,65 +82,54 @@ public class GeneratePageObject {
         // PageBeanの生成
         PageBean pageBean = new PageBean();
 
-        // input type="text"項目情報リストの取得
-        List<ItemBean> typeTextList = getTypeTextList(document, "input[type=text]");
-        pageBean.setTypeTextList(typeTextList);
+        // クラス名の設定
+        pageBean.setClassNm(outputClassNm);
 
-        // // input type=password属性オブジェクトの取得
-        // logger.debug("■input type=password");
-        // for (Element element : document.select("input[type=password]")) {
-        // logger.debug(element.toString());
-        // }
-        //
-        // // input type=radio属性オブジェクトの取得
-        // logger.debug("■input type=radio");
-        // for (Element element : document.select("input[type=radio]")) {
-        // logger.debug(element.toString());
-        // }
-        //
-        // // input type=checkbox属性オブジェクトの取得
-        // logger.debug("■input type=checkbox");
-        // for (Element element : document.select("input[type=checkbox]")) {
-        // logger.debug(element.toString());
-        // }
-        //
-        // // select属性オブジェクトの取得
-        // logger.debug("■select");
-        // for (Element element : document.select("select")) {
-        // logger.debug(element.toString());
-        // }
-        //
-        // // textarea属性オブジェクトの取得
-        // logger.debug("■textarea");
-        // for (Element element : document.select("textarea")) {
-        // logger.debug(element.toString());
-        // }
-        //
+        // input type="text" or input type="password"項目情報リストの取得
+        List<ItemBean> textList = getItemList(document, "input[type=text],input[type=password]", Item.text);
+        pageBean.setTextList(textList);
 
-        // title属性オブジェクトの取得
-        logger.debug("■title");
-        for (Element element : document.select("title")) {
-            logger.debug(element.toString());
+        // input type="radio"属性オブジェクトの取得
+        List<ItemBean> radioList = getItemList(document, "input[type=radio]", Item.radio);
+        pageBean.setRadioList(radioList);
 
-            pageBean.setClassNm(element.text());
-            pageBean.setTitle(element.text());
-        }
+        // input type="checkbox"属性オブジェクトの取得
+        List<ItemBean> checkboxList = getItemList(document, "input[type=checkbox]", Item.checkbox);
+        pageBean.setCheckboxList(checkboxList);
+
+        // input type="button"項目情報リストの取得
+        List<ItemBean> buttonList = getItemList(document, "input[type=button],input[type=submit]", Item.button);
+        pageBean.setButtonList(buttonList);
+
+        // select属性オブジェクトの取得
+        List<ItemBean> selectList = getItemList(document, "select", Item.select);
+        pageBean.setSelectList(selectList);
+
+        // textarea属性オブジェクトの取得
+        List<ItemBean> textareaList = getItemList(document, "textarea", Item.textarea);
+        pageBean.setTextareaList(textareaList);
+
+        // a属性オブジェクトの取得
+        List<ItemBean> anchorList = getItemList(document, "a", Item.anchor);
+        pageBean.setAnchorList(anchorList);
 
         return pageBean;
     }
 
     /**
-     * input type="text"項目情報リストの取得
+     * 項目情報リストの取得
      * @param document
      * @param cssSelector
+     * @param item
      * @return list
      */
-    private List<ItemBean> getTypeTextList(Document document,
-                                           String cssSelector) {
+    private List<ItemBean> getItemList(Document document,
+                                       String cssSelector,
+                                       Item item) {
         List<ItemBean> list = new ArrayList<>();
 
-        // input type=text属性オブジェクトの取得
-        logger.debug("■input type=text");
+        // 属性オブジェクトの取得
+        logger.debug("■{}", cssSelector);
         for (Element element : document.select(cssSelector)) {
             logger.debug(element.toString());
 
@@ -138,29 +138,58 @@ public class GeneratePageObject {
 
             // 属性情報の設定
             for (Attribute attr : element.attributes()) {
-                switch (attr.getKey().toLowerCase()) {
-                case "type":
+                ItemAttr itemAttr = ItemAttr.getEnum(attr.getKey());
+                if (itemAttr == null) {
+                    continue;
+                }
+
+                switch (itemAttr) {
+                case type:
                     itemBean.setAttrType(attr.getValue());
                     break;
-                case "id":
+                case id:
                     itemBean.setAttrId(attr.getValue());
                     break;
-                case "name":
+                case name:
                     itemBean.setAttrName(attr.getValue());
+                    break;
+                case value:
+                    itemBean.setAttrValue(attr.getValue());
                     break;
                 }
             }
 
+            // タグ情報を設定
+            itemBean.setTagName(element.tagName());
+
+            // 値情報を設定
+            itemBean.setText(element.text());
+
             // 検索値情報の設定
             if (itemBean.getAttrId() != null) {
-                itemBean.setFindBy("id");
-                itemBean.setItem(itemBean.getAttrId());
-                itemBean.setItemUpper(firstCharUpper(itemBean.getAttrId()));
+                itemBean.setFindBy(FindBy.id.name());
                 itemBean.setFindByValue(itemBean.getAttrId());
+                itemBean.setItem(itemBean.getAttrId());
             } else if (itemBean.getAttrName() != null) {
-                itemBean.setFindBy("name");
-                itemBean.setItem(firstCharUpper(itemBean.getAttrName()));
+                itemBean.setFindBy(FindBy.name.name());
                 itemBean.setFindByValue(itemBean.getAttrName());
+                itemBean.setItem(itemBean.getAttrName());
+            } else if (itemBean.getAttrValue() != null) {
+                itemBean.setFindBy(FindBy.css.name());
+                itemBean.setFindByValue(itemBean.getAttrValue());
+                itemBean.setItem(dummyCd + new Random().nextInt(100000));
+            } else if (itemBean.getText() != null) {
+                itemBean.setFindBy(FindBy.partialLinkText.name());
+                itemBean.setFindByValue(itemBean.getText());
+                itemBean.setItem(dummyCd + new Random().nextInt(100000));
+            }
+
+            // 変数名（大文字）の設定
+            itemBean.setItemUpper(firstCharUpper(itemBean.getItem()));
+            // 変数名（コメント用）の設定
+            itemBean.setItemComment(itemBean.getItem() + " " + itemBean.getTagName());
+            if (itemBean.getAttrType() != null) {
+                itemBean.setItemComment(itemBean.getItemComment() + " type=" + itemBean.getAttrType());
             }
 
             // リストに追加
@@ -202,9 +231,9 @@ public class GeneratePageObject {
         // クローズ
         pw.close();
 
-        // 結果出力
-        System.out.println("");
-        Files.readAllLines(outputPath).forEach(System.out::println);
+        // // 結果出力
+        // System.out.println("");
+        // Files.readAllLines(outputPath).forEach(System.out::println);
     }
 
     /**

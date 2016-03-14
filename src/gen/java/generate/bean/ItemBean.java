@@ -1,4 +1,4 @@
-package generate;
+package generate.bean;
 
 /**
  * 項目情報
@@ -10,11 +10,18 @@ public class ItemBean {
     private String item;
     /** 変数名（先頭大文字） */
     private String itemUpper;
+    /** 変数名（コメント用） */
+    private String itemComment;
+    /** タグ名 */
+    private String tagName;
 
     /** 検索属性 */
     private String findBy;
     /** 検索属性値 */
     private String findByValue;
+
+    /** 値 */
+    private String text;
 
     /** attrType */
     private String attrType;
@@ -58,6 +65,38 @@ public class ItemBean {
     }
 
     /**
+     * 変数名（コメント用）を取得します。
+     * @return 変数名（コメント用）
+     */
+    public String getItemComment() {
+        return itemComment;
+    }
+
+    /**
+     * 変数名（コメント用）を設定します。
+     * @param itemComment 変数名（コメント用）
+     */
+    public void setItemComment(String itemComment) {
+        this.itemComment = itemComment;
+    }
+
+    /**
+     * タグ名を取得します。
+     * @return タグ名
+     */
+    public String getTagName() {
+        return tagName;
+    }
+
+    /**
+     * タグ名を設定します。
+     * @param tagName タグ名
+     */
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
+
+    /**
      * 検索属性を取得します。
      * @return 検索属性
      */
@@ -87,6 +126,22 @@ public class ItemBean {
      */
     public void setFindByValue(String findByValue) {
         this.findByValue = findByValue;
+    }
+
+    /**
+     * 値を取得します。
+     * @return 値
+     */
+    public String getText() {
+        return text;
+    }
+
+    /**
+     * 値を設定します。
+     * @param text 値
+     */
+    public void setText(String text) {
+        this.text = text;
     }
 
     /**
