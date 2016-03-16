@@ -17,7 +17,7 @@ public enum GeneratePropertyManager {
     /** Logger */
     private static final Logger logger = LoggerFactory.getLogger(GeneratePropertyManager.class);
 
-    /** プロパティ名(selenium.properties) */
+    /** プロパティ名(generate.properties) */
     private static final String PROPERTY_NM = "generate";
 
     /** プロパティ */

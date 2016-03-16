@@ -9,12 +9,13 @@ import generate.com.PageConst.ItemAttr;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -30,12 +31,8 @@ public class GenerateHtmlToExcel {
     /** Logger */
     private static final Logger logger = LoggerFactory.getLogger(GenerateHtmlToExcel.class);
 
-    /** プロパティ */
+    /** プロパティ（generate） */
     private static final GeneratePropertyManager prop = GeneratePropertyManager.INSTANCE;
-
-    /** 暫定定数 */
-    private static final String inputFileNm = "入力フォーム サンプル.html";
-    private static final String outputFileNm = "入力フォーム サンプル.xlsx";
 
     /**
      * 起動
@@ -57,13 +54,38 @@ public class GenerateHtmlToExcel {
     private void execute() throws IOException {
 
         // HTMLファイルパスの取得
-        Path path = Paths.get(prop.getString("file.input.dir"), inputFileNm);
+        List<Path> fileList = getFileList();
+        for (Path path : fileList) {
 
-        // HTMLページ解析
-        PageBean pageBean = analyze(path);
+            // HTMLページ解析
+            PageBean pageBean = analyze(path);
 
-        // テンプレート生成
-        generate(pageBean);
+            // テンプレート生成
+            generate(pageBean);
+        }
+    }
+
+    /**
+     * ファイル一覧の取得
+     * @return
+     */
+    private List<Path> getFileList() {
+        // 検索結果の格納List
+        List<Path> list = new ArrayList<Path>();
+
+        // 読込ファイル情報の取得
+        Path inputFileDir = Paths.get(prop.getString("html.input.file.dir"));
+        String inputFileNmRegex = prop.getString("html.input.file.name.regex");
+
+        // 検索処理
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(inputFileDir, inputFileNmRegex)) {
+            stream.forEach(list::add);
+        } catch (IOException e) {
+            logger.warn("file search error", e);
+            return null;
+        }
+
+        return list;
     }
 
     /**
@@ -75,7 +97,7 @@ public class GenerateHtmlToExcel {
     private PageBean analyze(Path path) throws IOException {
 
         // HTMLドキュメントの生成
-        Document document = Jsoup.parse(path.toFile(), prop.getString("file.input.encoding"));
+        Document document = Jsoup.parse(path.toFile(), prop.getString("html.input.file.encoding"));
 
         // PageBeanの生成
         PageBean pageBean = new PageBean();
@@ -194,20 +216,20 @@ public class GenerateHtmlToExcel {
 
         try (Workbook workbook = new XSSFWorkbook()) {
 
-            Sheet sheet = workbook.createSheet();
-            for (int i = 0; i < rows; i++) {
-                Row row = sheet.createRow(i);
-
-                // int x = 0;
-                // row.createCell(x).setCellValue("000");
-                // row.getCell(x).setCellStyle(cellStyle1);
-                // x++;
-                // row.createCell(x).setCellValue("2016/03/11 09:53:55");
-                // row.getCell(x).setCellStyle(cellStyle1);
-                // x++;
-                // row.createCell(x).setCellValue("foo\nbar-");
-                // row.getCell(x).setCellStyle(cellStyle2);
-            }
+            Sheet sheetMain = workbook.getSheet(prop.getString("excel.sheet.name.main"));
+            Sheet sheetHeader = workbook.getSheet(prop.getString("excel.sheet.name.header"));
+            // for (ItemBean itemBean ; pageBean.getAllItemList()) {
+            // Row row = sheetMain.getCellComment(Cell);
+            // // int x = 0;
+            // // row.createCell(x).setCellValue("000");
+            // // row.getCell(x).setCellStyle(cellStyle1);
+            // // x++;
+            // // row.createCell(x).setCellValue("2016/03/11 09:53:55");
+            // // row.getCell(x).setCellStyle(cellStyle1);
+            // // x++;
+            // // row.createCell(x).setCellValue("foo\nbar-");
+            // // row.getCell(x).setCellStyle(cellStyle2);
+            // }
 
             workbook.write(new FileOutputStream(fileName));
         }
