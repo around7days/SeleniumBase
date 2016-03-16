@@ -3,7 +3,6 @@ package selenium.sample.page;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
 
 import selenium.com.AbstractSeleniumPage;
@@ -23,27 +22,21 @@ public class ${pageBean.classNm} extends AbstractSeleniumPage {
 
 #end
 
-    /* 共通メソッド ------------------------------------------------------------------------------------------------- */
-
-    /**
-     * PageFactoryを使用してWebElementをマッピングする
-     * @return ${pageBean.classNm}
-     */
-    public ${pageBean.classNm} initialize() {
-        return PageFactory.initElements(driver, this.getClass());
-    }
-
-    /**
-     * タイトルを取得する。
-     * @return title
-     */
-    public String getTitle() {
-        return driver.getTitle();
-    }
-
-
     /* IE操作メソッド（input type=text） ---------------------------------------------------------------------------- */
 #foreach(${itemBean} in ${pageBean.textList})
+    /**
+     * ${itemBean.itemComment} に値を入力します。
+     * @param sendKeys
+     */
+    public void sendkeys${itemBean.itemUpper}(String sendKeys) {
+        this.${itemBean.item}.clear();
+        this.${itemBean.item}.sendKeys(sendKeys);
+    }
+
+#end
+
+    /* IE操作メソッド（textarea） ----------------------------------------------------------------------------------- */
+#foreach(${itemBean} in ${pageBean.textareaList})
     /**
      * ${itemBean.itemComment} に値を入力します。
      * @param sendKeys
@@ -88,6 +81,17 @@ public class ${pageBean.classNm} extends AbstractSeleniumPage {
 
 #end
 
+    /* IE操作メソッド（anchor） ------------------------------------------------------------------------------------- */
+#foreach(${itemBean} in ${pageBean.anchorList})
+    /**
+     * ${itemBean.itemComment} をクリックします。
+     */
+    public void click${itemBean.itemUpper}() {
+        this.${itemBean.item}.click();
+    }
+
+#end
+
     /* IE操作メソッド（select） ------------------------------------------------------------------------------------- */
 #foreach(${itemBean} in ${pageBean.selectList})
     /**
@@ -112,30 +116,6 @@ public class ${pageBean.classNm} extends AbstractSeleniumPage {
      */
     public void selectByVisibleText${itemBean.itemUpper}(String visibleText) {
         new Select(${itemBean.item}).selectByVisibleText(visibleText);
-    }
-
-#end
-
-    /* IE操作メソッド（textarea） ----------------------------------------------------------------------------------- */
-#foreach(${itemBean} in ${pageBean.textareaList})
-    /**
-     * ${itemBean.itemComment} に値を入力します。
-     * @param sendKeys
-     */
-    public void sendkeys${itemBean.itemUpper}(String sendKeys) {
-        this.${itemBean.item}.clear();
-        this.${itemBean.item}.sendKeys(sendKeys);
-    }
-
-#end
-
-    /* IE操作メソッド（a） ------------------------------------------------------------------------------------------ */
-#foreach(${itemBean} in ${pageBean.anchorList})
-    /**
-     * ${itemBean.itemComment} をクリックします。
-     */
-    public void click${itemBean.itemUpper}() {
-        this.${itemBean.item}.click();
     }
 
 #end

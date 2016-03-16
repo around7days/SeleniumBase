@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import selenium.com.AbstractSeleniumTest;
-import selenium.com.SeleniumCapture;
 import selenium.sample.page.LoginPage;
 
 /**
@@ -43,8 +42,9 @@ public class Sample2Test extends AbstractSeleniumTest {
         /*
          * キャプチャ設定
          */
-        SeleniumCapture capture = new SeleniumCapture(driver);
         capture.setPrefix("No1_1次マニフェスト登録");
+
+        driver.get("http://pisetmdbdv01.mew.co.jp/pb_demo/ActionServlet");
 
         /*
          * 初期表示（ログイン画面）

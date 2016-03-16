@@ -33,8 +33,10 @@ public class SeleniumCapture {
     /** ファイル名：拡張子（テキスト） */
     private static final String TEXT_EXTENSION = ".txt";
 
-    /** 出力先ディレクトリ */
-    private static final Path outputDir = Paths.get(prop.getString("capture.dir"));
+    /** 出力先ディレクトリ（通常時） */
+    private static final Path outputSuccessDir = Paths.get(prop.getString("capture.dir.success"));
+    /** 出力先ディレクトリ（エラー時） */
+    private static final Path outputErrorDir = Paths.get(prop.getString("capture.dir.error"));
 
     /** WebDriver */
     private WebDriver driver = null;
@@ -50,13 +52,26 @@ public class SeleniumCapture {
     }
 
     /**
+     * キャプチャ取得（名前自動）<br>
+     * （エラー時用）
+     * @throws IOException
+     */
+    public void screenShotError() throws IOException {
+        // 自動ファイル名
+        String fileNm = prefix + getSysDateTime() + IMAGE_EXTENSION;
+        Path path = outputErrorDir.resolve(fileNm);
+
+        screenShot(path);
+    }
+
+    /**
      * キャプチャ取得（名前自動）
      * @throws IOException
      */
     public void screenShot() throws IOException {
         // 自動ファイル名
         String fileNm = prefix + getSysDateTime() + IMAGE_EXTENSION;
-        Path path = outputDir.resolve(fileNm);
+        Path path = outputSuccessDir.resolve(fileNm);
 
         screenShot(path);
     }
@@ -83,7 +98,7 @@ public class SeleniumCapture {
     public void screenShotAlertMsg(Alert alert) throws IOException {
         // 自動ファイル名
         String fileNm = prefix + getSysDateTime() + TEXT_EXTENSION;
-        Path path = outputDir.resolve(fileNm);
+        Path path = outputSuccessDir.resolve(fileNm);
 
         logger.debug("capture : {}", path.toString());
 
@@ -113,7 +128,8 @@ public class SeleniumCapture {
      * 出力先ディレクトリ生成
      */
     public static void createOutputDir() {
-        outputDir.toFile().mkdirs();
+        outputSuccessDir.toFile().mkdirs();
+        outputErrorDir.toFile().mkdirs();
     }
 
     /**

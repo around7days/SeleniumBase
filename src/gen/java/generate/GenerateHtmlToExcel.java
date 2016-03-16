@@ -7,17 +7,17 @@ import generate.com.PageConst.FindBy;
 import generate.com.PageConst.Item;
 import generate.com.PageConst.ItemAttr;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
@@ -25,19 +25,17 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GeneratePageObject {
+public class GenerateHtmlToExcel {
 
     /** Logger */
-    private static final Logger logger = LoggerFactory.getLogger(GeneratePageObject.class);
+    private static final Logger logger = LoggerFactory.getLogger(GenerateHtmlToExcel.class);
 
     /** プロパティ */
     private static final GeneratePropertyManager prop = GeneratePropertyManager.INSTANCE;
 
     /** 暫定定数 */
     private static final String inputFileNm = "入力フォーム サンプル.html";
-    private static final String outputFileNm = "SamplePage.java";
-    private static final String outputClassNm = "SamplePage";
-    private static final String dummyCd = "dummy";
+    private static final String outputFileNm = "入力フォーム サンプル.xlsx";
 
     /**
      * 起動
@@ -46,7 +44,7 @@ public class GeneratePageObject {
     public static void main(String[] args) {
 
         try {
-            new GeneratePageObject().execute();
+            new GenerateHtmlToExcel().execute();
         } catch (Exception e) {
             logger.error("system error", e);
         }
@@ -82,9 +80,6 @@ public class GeneratePageObject {
         // PageBeanの生成
         PageBean pageBean = new PageBean();
 
-        // クラス名の設定
-        pageBean.setClassNm(outputClassNm);
-
         // input type="text" or input type="password"項目情報リストの取得
         List<ItemBean> textList = getItemList(document, "input[type=text],input[type=password]", Item.text);
         pageBean.setTextList(textList);
@@ -109,7 +104,7 @@ public class GeneratePageObject {
         List<ItemBean> textareaList = getItemList(document, "textarea", Item.textarea);
         pageBean.setTextareaList(textareaList);
 
-        // a属性オブジェクトの取得
+        // anchor属性オブジェクトの取得
         List<ItemBean> anchorList = getItemList(document, "a", Item.anchor);
         pageBean.setAnchorList(anchorList);
 
@@ -169,27 +164,15 @@ public class GeneratePageObject {
             if (itemBean.getAttrId() != null) {
                 itemBean.setFindBy(FindBy.id.name());
                 itemBean.setFindByValue(itemBean.getAttrId());
-                itemBean.setItem(itemBean.getAttrId());
             } else if (itemBean.getAttrName() != null) {
                 itemBean.setFindBy(FindBy.name.name());
                 itemBean.setFindByValue(itemBean.getAttrName());
-                itemBean.setItem(itemBean.getAttrName());
             } else if (itemBean.getAttrValue() != null) {
                 itemBean.setFindBy(FindBy.css.name());
                 itemBean.setFindByValue(itemBean.getAttrValue());
-                itemBean.setItem(dummyCd + new Random().nextInt(100000));
             } else if (itemBean.getText() != null) {
                 itemBean.setFindBy(FindBy.partialLinkText.name());
                 itemBean.setFindByValue(itemBean.getText());
-                itemBean.setItem(dummyCd + new Random().nextInt(100000));
-            }
-
-            // 変数名（大文字）の設定
-            itemBean.setItemUpper(firstCharUpper(itemBean.getItem()));
-            // 変数名（コメント用）の設定
-            itemBean.setItemComment(itemBean.getItem() + " " + itemBean.getTagName());
-            if (itemBean.getAttrType() != null) {
-                itemBean.setItemComment(itemBean.getItemComment() + " type=" + itemBean.getAttrType());
             }
 
             // リストに追加
@@ -206,46 +189,56 @@ public class GeneratePageObject {
      */
     private void generate(PageBean pageBean) throws IOException {
 
-        // Velocityの初期化
-        Velocity.init(this.getClass().getResource("/" + prop.getString("velocity.property.file")).getPath());
+        int rows = 100;
+        String fileName = "C:/Users/panasonic/Desktop/output.xlsx";
 
-        // テンプレートの読込
-        Template template = Velocity.getTemplate(prop.getString("velocity.template.file"));
+        try (Workbook workbook = new XSSFWorkbook()) {
 
-        // テーブル単位でマージ・ファイル出力
-        // Velocityコンテキストに値を設定
-        VelocityContext context = new VelocityContext();
-        context.put("pageBean", pageBean);
-        context.put("q", "\""); // ダブルクォーテーションのエスケープ
+            Sheet sheet = workbook.createSheet();
+            for (int i = 0; i < rows; i++) {
+                Row row = sheet.createRow(i);
 
-        // 出力ファイルパスの生成
-        Path outputPath = Paths.get(prop.getString("file.output.dir"), outputFileNm);
+                // int x = 0;
+                // row.createCell(x).setCellValue("000");
+                // row.getCell(x).setCellStyle(cellStyle1);
+                // x++;
+                // row.createCell(x).setCellValue("2016/03/11 09:53:55");
+                // row.getCell(x).setCellStyle(cellStyle1);
+                // x++;
+                // row.createCell(x).setCellValue("foo\nbar-");
+                // row.getCell(x).setCellStyle(cellStyle2);
+            }
 
-        // テンプレートのマージ
-        PrintWriter pw = new PrintWriter(outputPath.toFile());
-        template.merge(context, pw);
-
-        // フラッシュ
-        pw.flush();
-
-        // クローズ
-        pw.close();
-
-        // // 結果出力
-        // System.out.println("");
-        // Files.readAllLines(outputPath).forEach(System.out::println);
-    }
-
-    /**
-     * 先頭文字大文字か
-     * @param value
-     * @return value
-     */
-    private String firstCharUpper(String value) {
-        if (value.length() > 1) {
-            return String.valueOf(value.charAt(0)).toUpperCase() + value.substring(1, value.length());
-        } else {
-            return value.toUpperCase();
+            workbook.write(new FileOutputStream(fileName));
         }
+
+        // // Velocityの初期化
+        // Velocity.init(this.getClass().getResource("/" + prop.getString("velocity.property.file")).getPath());
+        //
+        // // テンプレートの読込
+        // Template template = Velocity.getTemplate(prop.getString("velocity.template.file"));
+        //
+        // // テーブル単位でマージ・ファイル出力
+        // // Velocityコンテキストに値を設定
+        // VelocityContext context = new VelocityContext();
+        // context.put("pageBean", pageBean);
+        // context.put("q", "\""); // ダブルクォーテーションのエスケープ
+        //
+        // // 出力ファイルパスの生成
+        // Path outputPath = Paths.get(prop.getString("file.output.dir"), outputFileNm);
+        //
+        // // テンプレートのマージ
+        // PrintWriter pw = new PrintWriter(outputPath.toFile());
+        // template.merge(context, pw);
+        //
+        // // フラッシュ
+        // pw.flush();
+        //
+        // // クローズ
+        // pw.close();
+        //
+        // // // 結果出力
+        // // System.out.println("");
+        // // Files.readAllLines(outputPath).forEach(System.out::println);
     }
 }

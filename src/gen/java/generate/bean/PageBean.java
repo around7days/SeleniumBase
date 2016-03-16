@@ -43,12 +43,12 @@ public class PageBean {
     public List<ItemBean> getAllItemList() {
         List<ItemBean> list = new ArrayList<>();
         list.addAll(textList);
+        list.addAll(textareaList);
         list.addAll(radioList);
         list.addAll(checkboxList);
         list.addAll(buttonList);
-        list.addAll(selectList);
-        list.addAll(textareaList);
         list.addAll(anchorList);
+        list.addAll(selectList);
         return list;
     }
 

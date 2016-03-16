@@ -3,7 +3,6 @@ package selenium.sample.page;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 import selenium.com.AbstractSeleniumPage;
 
@@ -27,17 +26,6 @@ public class LoginPage extends AbstractSeleniumPage {
     @FindBy(name = "btnname")
     @CacheLookup
     private WebElement loginBtn;
-
-    /**
-     * PageFactoryを使用してWebElementをマッピングする
-     * @return
-     */
-    public LoginPage initialize() {
-        // googleのトップページへ
-        driver.get("http://pisetmdbdv01.mew.co.jp/pb_demo/ActionServlet");
-
-        return PageFactory.initElements(driver, this.getClass());
-    }
 
     /**
      * ログインIDを設定します。

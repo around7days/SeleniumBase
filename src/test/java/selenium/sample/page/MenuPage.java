@@ -3,7 +3,6 @@ package selenium.sample.page;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
 import selenium.com.AbstractSeleniumPage;
 
@@ -17,11 +16,4 @@ public class MenuPage extends AbstractSeleniumPage {
     @CacheLookup
     private WebElement manifestYoyakuTorok;
 
-    /**
-     * PageFactoryを使用してWebElementをマッピングする
-     * @return
-     */
-    public MenuPage initialize() {
-        return PageFactory.initElements(driver, this.getClass());
-    }
 }
