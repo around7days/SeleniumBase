@@ -6,9 +6,9 @@ package generate.com;
  */
 public class PageConst {
 
-    /** 項目 */
-    public enum Item {
-        text, radio, checkbox, button, select, textarea, anchor;
+    /** HTMLタグ */
+    public enum HtmlTag {
+        input, select, textarea, a;
     }
 
     /** 項目属性 */

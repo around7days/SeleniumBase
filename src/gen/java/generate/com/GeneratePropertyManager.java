@@ -27,9 +27,19 @@ public enum GeneratePropertyManager {
     static {
         TreeSet<String> keys = new TreeSet<String>(rb.keySet());
         for (String key : keys) {
-            String val = String.format("%-30s", key) + " : " + rb.getString(key);
+            String val = String.format("%-35s", key) + " : " + rb.getString(key);
             logger.debug(val);
         }
+    }
+
+    /**
+     * プロパティから値を取得
+     * @param key
+     * @return keyに対応する値
+     */
+    public int getInt(String key) {
+        String val = getString(key);
+        return Integer.valueOf(val);
     }
 
     /**
@@ -44,4 +54,5 @@ public enum GeneratePropertyManager {
         }
         return rb.getString(key);
     }
+
 }

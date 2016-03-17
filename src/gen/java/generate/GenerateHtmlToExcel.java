@@ -4,18 +4,23 @@ import generate.bean.ItemBean;
 import generate.bean.PageBean;
 import generate.com.GeneratePropertyManager;
 import generate.com.PageConst.FindBy;
-import generate.com.PageConst.Item;
+import generate.com.PageConst.HtmlTag;
 import generate.com.PageConst.ItemAttr;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -34,17 +39,30 @@ public class GenerateHtmlToExcel {
     /** プロパティ（generate） */
     private static final GeneratePropertyManager prop = GeneratePropertyManager.INSTANCE;
 
+    /** Excel明細上限 */
+    private static final int EXCEL_DETAIL_MAX = 100;
+
+    /** 読み込むHTMLタグ情報 */
+    private static StringJoiner htmlTags = new StringJoiner(",");
+    static {
+        for (HtmlTag htmltag : HtmlTag.values()) {
+            htmlTags.add(htmltag.name());
+        }
+    }
+
     /**
      * 起動
      * @param args
      */
     public static void main(String[] args) {
 
+        logger.error("処理開始---------------------------------------------------------------------------------------");
         try {
             new GenerateHtmlToExcel().execute();
         } catch (Exception e) {
             logger.error("system error", e);
         }
+        logger.error("処理完了---------------------------------------------------------------------------------------");
     }
 
     /**
@@ -54,13 +72,17 @@ public class GenerateHtmlToExcel {
     private void execute() throws IOException {
 
         // HTMLファイルパスの取得
+        logger.debug("★getFileList");
         List<Path> fileList = getFileList();
         for (Path path : fileList) {
+            logger.debug("対象HTMLファイル : {}", path.toString());
 
             // HTMLページ解析
+            logger.debug("★analyze");
             PageBean pageBean = analyze(path);
 
             // テンプレート生成
+            logger.debug("★generate");
             generate(pageBean);
         }
     }
@@ -68,21 +90,18 @@ public class GenerateHtmlToExcel {
     /**
      * ファイル一覧の取得
      * @return
+     * @throws IOException
      */
-    private List<Path> getFileList() {
+    private List<Path> getFileList() throws IOException {
         // 検索結果の格納List
         List<Path> list = new ArrayList<Path>();
 
-        // 読込ファイル情報の取得
         Path inputFileDir = Paths.get(prop.getString("html.input.file.dir"));
         String inputFileNmRegex = prop.getString("html.input.file.name.regex");
 
         // 検索処理
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(inputFileDir, inputFileNmRegex)) {
             stream.forEach(list::add);
-        } catch (IOException e) {
-            logger.warn("file search error", e);
-            return null;
         }
 
         return list;
@@ -102,33 +121,19 @@ public class GenerateHtmlToExcel {
         // PageBeanの生成
         PageBean pageBean = new PageBean();
 
-        // input type="text" or input type="password"項目情報リストの取得
-        List<ItemBean> textList = getItemList(document, "input[type=text],input[type=password]", Item.text);
-        pageBean.setTextList(textList);
+        // ページ名称(html)の取得
+        pageBean.setPageNmHtml(path.getFileName().toString());
 
-        // input type="radio"属性オブジェクトの取得
-        List<ItemBean> radioList = getItemList(document, "input[type=radio]", Item.radio);
-        pageBean.setRadioList(radioList);
+        // ページ名称(Excel)の生成
+        // XXX
+        pageBean.setPageNmExcel(path.getFileName().toString() + ".xlsx");
 
-        // input type="checkbox"属性オブジェクトの取得
-        List<ItemBean> checkboxList = getItemList(document, "input[type=checkbox]", Item.checkbox);
-        pageBean.setCheckboxList(checkboxList);
+        // タイトルの取得
+        pageBean.setTitle(document.title());
 
-        // input type="button"項目情報リストの取得
-        List<ItemBean> buttonList = getItemList(document, "input[type=button],input[type=submit]", Item.button);
-        pageBean.setButtonList(buttonList);
-
-        // select属性オブジェクトの取得
-        List<ItemBean> selectList = getItemList(document, "select", Item.select);
-        pageBean.setSelectList(selectList);
-
-        // textarea属性オブジェクトの取得
-        List<ItemBean> textareaList = getItemList(document, "textarea", Item.textarea);
-        pageBean.setTextareaList(textareaList);
-
-        // anchor属性オブジェクトの取得
-        List<ItemBean> anchorList = getItemList(document, "a", Item.anchor);
-        pageBean.setAnchorList(anchorList);
+        // HTML項目情報リストの取得
+        List<ItemBean> itemList = getItemList(document, htmlTags.toString());
+        pageBean.setItemList(itemList);
 
         return pageBean;
     }
@@ -137,16 +142,13 @@ public class GenerateHtmlToExcel {
      * 項目情報リストの取得
      * @param document
      * @param cssSelector
-     * @param item
      * @return list
      */
     private List<ItemBean> getItemList(Document document,
-                                       String cssSelector,
-                                       Item item) {
+                                       String cssSelector) {
         List<ItemBean> list = new ArrayList<>();
 
         // 属性オブジェクトの取得
-        logger.debug("■{}", cssSelector);
         for (Element element : document.select(cssSelector)) {
             logger.debug(element.toString());
 
@@ -211,56 +213,95 @@ public class GenerateHtmlToExcel {
      */
     private void generate(PageBean pageBean) throws IOException {
 
-        int rows = 100;
-        String fileName = "C:/Users/panasonic/Desktop/output.xlsx";
+        // テンプレートファイルパスの取得
+        Path templateFilePath = new File(getClass().getClassLoader()
+                                                   .getResource(prop.getString("excel.template.file"))
+                                                   .getPath()).toPath();
 
-        try (Workbook workbook = new XSSFWorkbook()) {
+        // 出力先パスの取得
+        Path outPutFilePath = Paths.get(prop.getString("excel.output.file.dir"), pageBean.getPageNmExcel());
 
-            Sheet sheetMain = workbook.getSheet(prop.getString("excel.sheet.name.main"));
-            Sheet sheetHeader = workbook.getSheet(prop.getString("excel.sheet.name.header"));
-            // for (ItemBean itemBean ; pageBean.getAllItemList()) {
-            // Row row = sheetMain.getCellComment(Cell);
-            // // int x = 0;
-            // // row.createCell(x).setCellValue("000");
-            // // row.getCell(x).setCellStyle(cellStyle1);
-            // // x++;
-            // // row.createCell(x).setCellValue("2016/03/11 09:53:55");
-            // // row.getCell(x).setCellStyle(cellStyle1);
-            // // x++;
-            // // row.createCell(x).setCellValue("foo\nbar-");
-            // // row.getCell(x).setCellStyle(cellStyle2);
+        // テンプレートファイルをコピー
+        Files.copy(templateFilePath, outPutFilePath, StandardCopyOption.REPLACE_EXISTING);
+
+        // コピーしたテンプレートファイルに値を反映
+        try (Workbook workbook = new XSSFWorkbook(outPutFilePath.toString())) {
+
+            /*
+             * Mainシートの設定
+             */
+            {
+                // Mainシートの取得
+                Sheet sheet = workbook.getSheet(prop.getString("excel.sheet.name.main"));
+
+                // 値反映行を取得
+                int targetRow = prop.getInt("excel.main.detail.start.row") - 1;
+
+                // 項目情報単位で設定
+                for (int i = 0; i < pageBean.getItemList().size(); i++) {
+                    if (i == EXCEL_DETAIL_MAX) {
+                        logger.warn("Excel明細上限に達しました");
+                        break;
+                    }
+
+                    ItemBean itemBean = pageBean.getItemList().get(i);
+                    Row row = sheet.getRow(targetRow);
+
+                    // プロパティーキーが長いので省略用
+                    final String itemKey = "excel.main.detail.item.";
+                    final String implementKey = "excel.main.detail.implement.";
+
+                    setCellValue(row, (itemKey + "name.col"), itemBean.getItem()); // 項目
+                    setCellValue(row, (itemKey + "comment.col"), itemBean.getItemComment()); // 項目名
+                    setCellValue(row, (itemKey + "type.col"), ""); // 分類
+                    setCellValue(row, (itemKey + "findby.col"), itemBean.getFindBy()); // 選択方法
+                    setCellValue(row, (itemKey + "findby.val.col"), itemBean.getFindByValue()); // 選択値
+                    setCellValue(row, (itemKey + "findby.cnt.col"), ""); // 該当数
+                    setCellValue(row, (implementKey + "sendkeys.col"), ""); // 値設定
+                    setCellValue(row, (implementKey + "get.value.col"), ""); // 値取得(value)
+                    setCellValue(row, (implementKey + "get.text.col"), ""); // 値取得(text)
+                    setCellValue(row, (implementKey + "click.col"), ""); // クリック
+                    setCellValue(row, (implementKey + "select.index.col"), ""); // 選択(index)
+                    setCellValue(row, (implementKey + "select.value.col"), ""); // 選択(value)
+                    setCellValue(row, (implementKey + "select.text.col"), ""); // 選択(text)
+
+                    targetRow++;
+
+                }
+            }
+
+            /*
+             * Headerシートの設定
+             */
+            // {
+            // Sheet sheet = workbook.getSheet(prop.getString("excel.sheet.name.header"));
+            //
             // }
 
-            workbook.write(new FileOutputStream(fileName));
+            /*
+             * 結果出力
+             */
+            workbook.write(new FileOutputStream(outPutFilePath.toString() + ".xlsx"));
+            logger.debug("結果出力 : {}", outPutFilePath.toString());
         }
+    }
 
-        // // Velocityの初期化
-        // Velocity.init(this.getClass().getResource("/" + prop.getString("velocity.property.file")).getPath());
-        //
-        // // テンプレートの読込
-        // Template template = Velocity.getTemplate(prop.getString("velocity.template.file"));
-        //
-        // // テーブル単位でマージ・ファイル出力
-        // // Velocityコンテキストに値を設定
-        // VelocityContext context = new VelocityContext();
-        // context.put("pageBean", pageBean);
-        // context.put("q", "\""); // ダブルクォーテーションのエスケープ
-        //
-        // // 出力ファイルパスの生成
-        // Path outputPath = Paths.get(prop.getString("file.output.dir"), outputFileNm);
-        //
-        // // テンプレートのマージ
-        // PrintWriter pw = new PrintWriter(outputPath.toFile());
-        // template.merge(context, pw);
-        //
-        // // フラッシュ
-        // pw.flush();
-        //
-        // // クローズ
-        // pw.close();
-        //
-        // // // 結果出力
-        // // System.out.println("");
-        // // Files.readAllLines(outputPath).forEach(System.out::println);
+    /**
+     * Cellへの値反映
+     * @param row
+     * @param propKey
+     * @param value
+     * @return cell
+     */
+    private void setCellValue(Row row,
+                              String colPropKey,
+                              String value) {
+        int col = prop.getInt(colPropKey) - 1;
+        Cell cell = row.getCell(col);
+        // if (value != null) {
+        cell.setCellValue(value);
+        // } else {
+        // cell.setCellValue("");
+        // }
     }
 }

@@ -9,63 +9,48 @@ import java.util.List;
  */
 public class PageBean {
 
-    /** クラス名 */
-    private String classNm;
+    /** ページ名称（HTML） */
+    private String pageNmHtml;
+
+    /** ページ名称（Excel） */
+    private String pageNmExcel;
 
     /** ページタイトル */
     private String title;
 
-    /** input type="text"項目リスト */
-    private List<ItemBean> textList = new ArrayList<>();
-
-    /** input type="radio"項目リスト */
-    private List<ItemBean> radioList = new ArrayList<>();
-
-    /** input type="checkbox"項目リスト */
-    private List<ItemBean> checkboxList = new ArrayList<>();
-
-    /** input type="button"項目リスト */
-    private List<ItemBean> buttonList = new ArrayList<>();
-
-    /** select項目リスト */
-    private List<ItemBean> selectList = new ArrayList<>();
-
-    /** textarea項目リスト */
-    private List<ItemBean> textareaList = new ArrayList<>();
-
-    /** anchor項目リスト */
-    private List<ItemBean> anchorList = new ArrayList<>();
+    /** 項目リスト */
+    private List<ItemBean> itemList = new ArrayList<>();
 
     /**
-     * 全項目リストを取得します。
-     * @return 全項目リスト
+     * ページ名称（HTML）を取得します。
+     * @return ページ名称（HTML）
      */
-    public List<ItemBean> getAllItemList() {
-        List<ItemBean> list = new ArrayList<>();
-        list.addAll(textList);
-        list.addAll(textareaList);
-        list.addAll(radioList);
-        list.addAll(checkboxList);
-        list.addAll(buttonList);
-        list.addAll(anchorList);
-        list.addAll(selectList);
-        return list;
+    public String getPageNmHtml() {
+        return pageNmHtml;
     }
 
     /**
-     * クラス名を取得します。
-     * @return クラス名
+     * ページ名称（HTML）を設定します。
+     * @param pageNmHtml ページ名称（HTML）
      */
-    public String getClassNm() {
-        return classNm;
+    public void setPageNmHtml(String pageNmHtml) {
+        this.pageNmHtml = pageNmHtml;
     }
 
     /**
-     * クラス名を設定します。
-     * @param classNm クラス名
+     * ページ名称（Excel）を取得します。
+     * @return ページ名称（Excel）
      */
-    public void setClassNm(String classNm) {
-        this.classNm = classNm;
+    public String getPageNmExcel() {
+        return pageNmExcel;
+    }
+
+    /**
+     * ページ名称（Excel）を設定します。
+     * @param pageNmExcel ページ名称（Excel）
+     */
+    public void setPageNmExcel(String pageNmExcel) {
+        this.pageNmExcel = pageNmExcel;
     }
 
     /**
@@ -85,114 +70,18 @@ public class PageBean {
     }
 
     /**
-     * input type="text"項目リストを取得します。
-     * @return input type="text"項目リスト
+     * 項目リストを取得します。
+     * @return 項目リスト
      */
-    public List<ItemBean> getTextList() {
-        return textList;
+    public List<ItemBean> getItemList() {
+        return itemList;
     }
 
     /**
-     * input type="text"項目リストを設定します。
-     * @param textList input type="text"項目リスト
+     * 項目リストを設定します。
+     * @param itemList 項目リスト
      */
-    public void setTextList(List<ItemBean> textList) {
-        this.textList = textList;
-    }
-
-    /**
-     * input type="radio"項目リストを取得します。
-     * @return input type="radio"項目リスト
-     */
-    public List<ItemBean> getRadioList() {
-        return radioList;
-    }
-
-    /**
-     * input type="radio"項目リストを設定します。
-     * @param radioList input type="radio"項目リスト
-     */
-    public void setRadioList(List<ItemBean> radioList) {
-        this.radioList = radioList;
-    }
-
-    /**
-     * input type="checkbox"項目リストを取得します。
-     * @return input type="checkbox"項目リスト
-     */
-    public List<ItemBean> getCheckboxList() {
-        return checkboxList;
-    }
-
-    /**
-     * input type="checkbox"項目リストを設定します。
-     * @param checkboxList input type="checkbox"項目リスト
-     */
-    public void setCheckboxList(List<ItemBean> checkboxList) {
-        this.checkboxList = checkboxList;
-    }
-
-    /**
-     * input type="button"項目リストを取得します。
-     * @return input type="button"項目リスト
-     */
-    public List<ItemBean> getButtonList() {
-        return buttonList;
-    }
-
-    /**
-     * input type="button"項目リストを設定します。
-     * @param buttonList input type="button"項目リスト
-     */
-    public void setButtonList(List<ItemBean> buttonList) {
-        this.buttonList = buttonList;
-    }
-
-    /**
-     * select項目リストを取得します。
-     * @return select項目リスト
-     */
-    public List<ItemBean> getSelectList() {
-        return selectList;
-    }
-
-    /**
-     * select項目リストを設定します。
-     * @param selectList select項目リスト
-     */
-    public void setSelectList(List<ItemBean> selectList) {
-        this.selectList = selectList;
-    }
-
-    /**
-     * textarea項目リストを取得します。
-     * @return textarea項目リスト
-     */
-    public List<ItemBean> getTextareaList() {
-        return textareaList;
-    }
-
-    /**
-     * textarea項目リストを設定します。
-     * @param textareaList textarea項目リスト
-     */
-    public void setTextareaList(List<ItemBean> textareaList) {
-        this.textareaList = textareaList;
-    }
-
-    /**
-     * anchor項目リストを取得します。
-     * @return anchor項目リスト
-     */
-    public List<ItemBean> getAnchorList() {
-        return anchorList;
-    }
-
-    /**
-     * anchor項目リストを設定します。
-     * @param anchorList anchor項目リスト
-     */
-    public void setAnchorList(List<ItemBean> anchorList) {
-        this.anchorList = anchorList;
+    public void setItemList(List<ItemBean> itemList) {
+        this.itemList = itemList;
     }
 }
