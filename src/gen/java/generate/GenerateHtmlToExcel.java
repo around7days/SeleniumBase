@@ -8,6 +8,7 @@ import generate.com.PageConst.HtmlTag;
 import generate.com.PageConst.ItemAttr;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -225,7 +226,8 @@ public class GenerateHtmlToExcel {
         Files.copy(templateFilePath, outPutFilePath, StandardCopyOption.REPLACE_EXISTING);
 
         // コピーしたテンプレートファイルに値を反映
-        try (Workbook workbook = new XSSFWorkbook(outPutFilePath.toString())) {
+        try (FileInputStream fis = new FileInputStream(outPutFilePath.toFile());
+             Workbook workbook = new XSSFWorkbook(fis)) {
 
             /*
              * Mainシートの設定
@@ -281,7 +283,10 @@ public class GenerateHtmlToExcel {
             /*
              * 結果出力
              */
-            workbook.write(new FileOutputStream(outPutFilePath.toString() + ".xlsx"));
+            // 先にcloseしておく。そうしないとテンプレートファイルまで更新されてしまう仕様らしい。
+            fis.close();
+
+            workbook.write(new FileOutputStream(outPutFilePath.toString()));
             logger.debug("結果出力 : {}", outPutFilePath.toString());
         }
     }
@@ -298,10 +303,6 @@ public class GenerateHtmlToExcel {
                               String value) {
         int col = prop.getInt(colPropKey) - 1;
         Cell cell = row.getCell(col);
-        // if (value != null) {
         cell.setCellValue(value);
-        // } else {
-        // cell.setCellValue("");
-        // }
     }
 }
