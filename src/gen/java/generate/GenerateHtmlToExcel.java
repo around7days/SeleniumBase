@@ -3,19 +3,16 @@ package generate;
 import generate.bean.ItemBean;
 import generate.bean.PageBean;
 import generate.com.GeneratePropertyManager;
+import generate.com.GenerateUtils;
 import generate.com.PageConst.FindBy;
 import generate.com.PageConst.HtmlTag;
 import generate.com.PageConst.ItemAttr;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -24,6 +21,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
@@ -72,11 +70,11 @@ public class GenerateHtmlToExcel {
      */
     private void execute() throws IOException {
 
-        // HTMLファイルパスの取得
+        // HTMLファイルパス一覧の取得
         logger.debug("★getFileList");
         List<Path> fileList = getFileList();
         for (Path path : fileList) {
-            logger.debug("対象HTMLファイル : {}", path.toString());
+            logger.debug("★対象HTMLファイル : {}", path.toString());
 
             // HTMLページ解析
             logger.debug("★analyze");
@@ -90,22 +88,15 @@ public class GenerateHtmlToExcel {
 
     /**
      * ファイル一覧の取得
-     * @return
+     * @return ファイル一覧
      * @throws IOException
      */
     private List<Path> getFileList() throws IOException {
-        // 検索結果の格納List
-        List<Path> list = new ArrayList<Path>();
 
-        Path inputFileDir = Paths.get(prop.getString("html.input.file.dir"));
-        String inputFileNmRegex = prop.getString("html.input.file.name.regex");
+        Path dir = Paths.get(prop.getString("html.input.file.dir"));
+        String fileNmRegex = prop.getString("html.input.file.name.regex");
 
-        // 検索処理
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(inputFileDir, inputFileNmRegex)) {
-            stream.forEach(list::add);
-        }
-
-        return list;
+        return GenerateUtils.getFileList(dir, fileNmRegex);
     }
 
     /**
@@ -126,8 +117,7 @@ public class GenerateHtmlToExcel {
         pageBean.setPageNmHtml(path.getFileName().toString());
 
         // ページ名称(Excel)の生成
-        // XXX
-        pageBean.setPageNmExcel(path.getFileName().toString() + ".xlsx");
+        pageBean.setPageNmExcel(getFileNm(path.getFileName().toString()) + ".xlsx");
 
         // タイトルの取得
         pageBean.setTitle(document.title());
@@ -180,25 +170,35 @@ public class GenerateHtmlToExcel {
             }
 
             // タグ情報を設定
-            itemBean.setTagName(element.tagName());
+            itemBean.setTag(element.tagName());
 
             // 値情報を設定
             itemBean.setText(element.text());
 
-            // 検索値情報の設定
+            // 項目・検索タイプ情報の設定
+            String item = "";
+            String findBy = "";
+            String findByValue = "";
             if (itemBean.getAttrId() != null) {
-                itemBean.setFindBy(FindBy.id.name());
-                itemBean.setFindByValue(itemBean.getAttrId());
+                findBy = FindBy.id.name();
+                findByValue = itemBean.getAttrId();
+                item = itemBean.getAttrId();
             } else if (itemBean.getAttrName() != null) {
-                itemBean.setFindBy(FindBy.name.name());
-                itemBean.setFindByValue(itemBean.getAttrName());
+                findBy = FindBy.name.name();
+                findByValue = itemBean.getAttrName();
+                item = itemBean.getAttrName();
             } else if (itemBean.getAttrValue() != null) {
-                itemBean.setFindBy(FindBy.css.name());
-                itemBean.setFindByValue(itemBean.getAttrValue());
+                findBy = FindBy.css.name();
+                findByValue = itemBean.getAttrValue();
+                item = itemBean.getAttrValue();
             } else if (itemBean.getText() != null) {
-                itemBean.setFindBy(FindBy.partialLinkText.name());
-                itemBean.setFindByValue(itemBean.getText());
+                findBy = FindBy.partialLinkText.name();
+                findByValue = itemBean.getText();
+                item = itemBean.getText();
             }
+            itemBean.setItem(item);
+            itemBean.setFindBy(findBy);
+            itemBean.setFindByVal(findByValue);
 
             // リストに追加
             list.add(itemBean);
@@ -215,80 +215,109 @@ public class GenerateHtmlToExcel {
     private void generate(PageBean pageBean) throws IOException {
 
         // テンプレートファイルパスの取得
-        Path templateFilePath = new File(getClass().getClassLoader()
-                                                   .getResource(prop.getString("excel.template.file"))
-                                                   .getPath()).toPath();
+        String templateFilePath = getClass().getClassLoader()
+                                            .getResource(prop.getString("excel.template.file"))
+                                            .getPath();
 
         // 出力先パスの取得
         Path outPutFilePath = Paths.get(prop.getString("excel.output.file.dir"), pageBean.getPageNmExcel());
 
-        // テンプレートファイルをコピー
-        Files.copy(templateFilePath, outPutFilePath, StandardCopyOption.REPLACE_EXISTING);
-
         // コピーしたテンプレートファイルに値を反映
-        try (FileInputStream fis = new FileInputStream(outPutFilePath.toFile());
-             Workbook workbook = new XSSFWorkbook(fis)) {
-
-            /*
-             * Mainシートの設定
-             */
-            {
-                // Mainシートの取得
-                Sheet sheet = workbook.getSheet(prop.getString("excel.sheet.name.main"));
-
-                // 値反映行を取得
-                int targetRow = prop.getInt("excel.main.detail.start.row") - 1;
-
-                // 項目情報単位で設定
-                for (int i = 0; i < pageBean.getItemList().size(); i++) {
-                    if (i == EXCEL_DETAIL_MAX) {
-                        logger.warn("Excel明細上限に達しました");
-                        break;
-                    }
-
-                    ItemBean itemBean = pageBean.getItemList().get(i);
-                    Row row = sheet.getRow(targetRow);
-
-                    // プロパティーキーが長いので省略用
-                    final String itemKey = "excel.main.detail.item.";
-                    final String implementKey = "excel.main.detail.implement.";
-
-                    setCellValue(row, (itemKey + "name.col"), itemBean.getItem()); // 項目
-                    setCellValue(row, (itemKey + "comment.col"), itemBean.getItemComment()); // 項目名
-                    setCellValue(row, (itemKey + "type.col"), ""); // 分類
-                    setCellValue(row, (itemKey + "findby.col"), itemBean.getFindBy()); // 選択方法
-                    setCellValue(row, (itemKey + "findby.val.col"), itemBean.getFindByValue()); // 選択値
-                    setCellValue(row, (itemKey + "findby.cnt.col"), ""); // 該当数
-                    setCellValue(row, (implementKey + "sendkeys.col"), ""); // 値設定
-                    setCellValue(row, (implementKey + "get.value.col"), ""); // 値取得(value)
-                    setCellValue(row, (implementKey + "get.text.col"), ""); // 値取得(text)
-                    setCellValue(row, (implementKey + "click.col"), ""); // クリック
-                    setCellValue(row, (implementKey + "select.index.col"), ""); // 選択(index)
-                    setCellValue(row, (implementKey + "select.value.col"), ""); // 選択(value)
-                    setCellValue(row, (implementKey + "select.text.col"), ""); // 選択(text)
-
-                    targetRow++;
-
-                }
-            }
-
-            /*
-             * Headerシートの設定
-             */
-            // {
-            // Sheet sheet = workbook.getSheet(prop.getString("excel.sheet.name.header"));
-            //
-            // }
-
-            /*
-             * 結果出力
-             */
-            // 先にcloseしておく。そうしないとテンプレートファイルまで更新されてしまう仕様らしい。
+        try (FileInputStream fis = new FileInputStream(templateFilePath);
+                Workbook workbook = new XSSFWorkbook(fis)) {
+            // 先にcloseしておく。
             fis.close();
 
+            // Mainシートの設定
+            Sheet mainSheet = workbook.getSheet(prop.getString("excel.sheet.name.main"));
+            mainSheetSetting(pageBean, mainSheet);
+
+            // Headerシートの設定
+            Sheet headerSheet = workbook.getSheet(prop.getString("excel.sheet.name.header"));
+            headerSheetSetting(pageBean, headerSheet);
+
+            // 結果出力
+            // 出力
             workbook.write(new FileOutputStream(outPutFilePath.toString()));
             logger.debug("結果出力 : {}", outPutFilePath.toString());
         }
+    }
+
+    /**
+     * メインシートの設定
+     * @param pageBean
+     * @param sheet
+     */
+    private void mainSheetSetting(PageBean pageBean,
+                                  Sheet sheet) {
+        // HTML名称
+        setCellValue(sheet, prop.getString("excel.main.html.name.range"), pageBean.getPageNmHtml());
+
+        // 値反映行を取得
+        int targetRow = prop.getInt("excel.main.detail.start.row") - 1;
+        // 項目情報単位で設定
+        for (int i = 0; i < EXCEL_DETAIL_MAX; i++) {
+            // 項目情報の取り出し
+            ItemBean itemBean;
+            if (pageBean.getItemList().size() > i) {
+                itemBean = pageBean.getItemList().get(i);
+            } else {
+                itemBean = new ItemBean();
+            }
+
+            // 出力列情報の取得
+            Row row = sheet.getRow(targetRow);
+
+            // プロパティーキーが長いので省略用
+            final String key1 = "excel.main.detail.item.";
+            final String key2 = "excel.main.detail.implement.";
+
+            // 画面項目
+            setCellValue(row, (key1 + "name.col"), itemBean.getItem()); // 項目
+            setCellValue(row, (key1 + "comment.col"), itemBean.getItemComment()); // 項目名
+            String type = HtmlTag.input.name().equals(itemBean.getTag()) ? itemBean.getAttrType() : itemBean.getTag();
+            setCellValue(row, (key1 + "type.col"), type); // 分類
+            setCellValue(row, (key1 + "findby.col"), itemBean.getFindBy()); // 選択方法
+            setCellValue(row, (key1 + "findby.val.col"), itemBean.getFindByVal()); // 選択値
+            setCellValue(row, (key1 + "findby.cnt.col"), "単体"); // 該当数 XXX
+            // 実装内容 XXX
+            setCellValue(row, (key2 + "sendkeys.col"), ""); // 値設定
+            setCellValue(row, (key2 + "get.value.col"), ""); // 値取得(value)
+            setCellValue(row, (key2 + "get.text.col"), ""); // 値取得(text)
+            setCellValue(row, (key2 + "click.col"), ""); // クリック
+            setCellValue(row, (key2 + "select.index.col"), ""); // 選択(index)
+            setCellValue(row, (key2 + "select.value.col"), ""); // 選択(value)
+            setCellValue(row, (key2 + "select.text.col"), ""); // 選択(text)
+
+            targetRow++;
+        }
+
+        if (pageBean.getItemList().size() > EXCEL_DETAIL_MAX) {
+            logger.warn("Excel明細上限は{}件です。", EXCEL_DETAIL_MAX);
+        }
+    }
+
+    /**
+     * ヘッダーシートの設定
+     * @param pageBean
+     * @param sheet
+     */
+    private void headerSheetSetting(PageBean pageBean,
+                                    Sheet sheet) {
+    }
+
+    /**
+     * Cellへの値反映
+     * @param sheet
+     * @param range
+     * @param value
+     */
+    private void setCellValue(Sheet sheet,
+                              String range,
+                              String value) {
+        CellReference cr = new CellReference(range);
+        Cell cell = sheet.getRow(cr.getRow()).getCell(cr.getCol());
+        cell.setCellValue(value);
     }
 
     /**
@@ -296,7 +325,6 @@ public class GenerateHtmlToExcel {
      * @param row
      * @param propKey
      * @param value
-     * @return cell
      */
     private void setCellValue(Row row,
                               String colPropKey,
@@ -304,5 +332,14 @@ public class GenerateHtmlToExcel {
         int col = prop.getInt(colPropKey) - 1;
         Cell cell = row.getCell(col);
         cell.setCellValue(value);
+    }
+
+    /**
+     * ファイル名から拡張子を除いたファイル名を取得<br>
+     * @param fileNm
+     * @return ファイル名
+     */
+    private String getFileNm(String fileNm) {
+        return fileNm.substring(0, fileNm.lastIndexOf("."));
     }
 }

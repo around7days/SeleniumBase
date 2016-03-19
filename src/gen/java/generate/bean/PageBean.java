@@ -15,6 +15,9 @@ public class PageBean {
     /** ページ名称（Excel） */
     private String pageNmExcel;
 
+    /** ページ名称（Java） */
+    private String pageNmJava;
+
     /** ページタイトル */
     private String title;
 
@@ -51,6 +54,22 @@ public class PageBean {
      */
     public void setPageNmExcel(String pageNmExcel) {
         this.pageNmExcel = pageNmExcel;
+    }
+
+    /**
+     * ページ名称（Java）を取得します。
+     * @return ページ名称（Java）
+     */
+    public String getPageNmJava() {
+        return pageNmJava;
+    }
+
+    /**
+     * ページ名称（Java）を設定します。
+     * @param pageNmJava ページ名称（Java）
+     */
+    public void setPageNmJava(String pageNmJava) {
+        this.pageNmJava = pageNmJava;
     }
 
     /**

@@ -6,19 +6,19 @@ package generate.bean;
  */
 public class ItemBean {
 
-    /** 変数名 */
+    /** 項目名 */
     private String item;
-    /** 変数名（先頭大文字） */
+    /** 項目名（先頭大文字） */
     private String itemUpper;
-    /** 変数名（コメント用） */
+    /** 項目名（コメント用） */
     private String itemComment;
-    /** タグ名 */
-    private String tagName;
+    /** タグ */
+    private String tag;
 
-    /** 検索属性 */
+    /** 検索タイプ */
     private String findBy;
-    /** 検索属性値 */
-    private String findByValue;
+    /** 検索タイプ値 */
+    private String findByVal;
 
     /** 値 */
     private String text;
@@ -33,99 +33,99 @@ public class ItemBean {
     private String attrValue;
 
     /**
-     * 変数名を取得します。
-     * @return 変数名
+     * 項目名を取得します。
+     * @return 項目名
      */
     public String getItem() {
         return item;
     }
 
     /**
-     * 変数名を設定します。
-     * @param item 変数名
+     * 項目名を設定します。
+     * @param item 項目名
      */
     public void setItem(String item) {
         this.item = item;
     }
 
     /**
-     * 変数名（先頭大文字）を取得します。
-     * @return 変数名（先頭大文字）
+     * 項目名（先頭大文字）を取得します。
+     * @return 項目名（先頭大文字）
      */
     public String getItemUpper() {
         return itemUpper;
     }
 
     /**
-     * 変数名（先頭大文字）を設定します。
-     * @param itemUpper 変数名（先頭大文字）
+     * 項目名（先頭大文字）を設定します。
+     * @param itemUpper 項目名（先頭大文字）
      */
     public void setItemUpper(String itemUpper) {
         this.itemUpper = itemUpper;
     }
 
     /**
-     * 変数名（コメント用）を取得します。
-     * @return 変数名（コメント用）
+     * 項目名（コメント用）を取得します。
+     * @return 項目名（コメント用）
      */
     public String getItemComment() {
         return itemComment;
     }
 
     /**
-     * 変数名（コメント用）を設定します。
-     * @param itemComment 変数名（コメント用）
+     * 項目名（コメント用）を設定します。
+     * @param itemComment 項目名（コメント用）
      */
     public void setItemComment(String itemComment) {
         this.itemComment = itemComment;
     }
 
     /**
-     * タグ名を取得します。
-     * @return タグ名
+     * タグを取得します。
+     * @return タグ
      */
-    public String getTagName() {
-        return tagName;
+    public String getTag() {
+        return tag;
     }
 
     /**
-     * タグ名を設定します。
-     * @param tagName タグ名
+     * タグを設定します。
+     * @param tag タグ
      */
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     /**
-     * 検索属性を取得します。
-     * @return 検索属性
+     * 検索タイプを取得します。
+     * @return 検索タイプ
      */
     public String getFindBy() {
         return findBy;
     }
 
     /**
-     * 検索属性を設定します。
-     * @param findBy 検索属性
+     * 検索タイプを設定します。
+     * @param findBy 検索タイプ
      */
     public void setFindBy(String findBy) {
         this.findBy = findBy;
     }
 
     /**
-     * 検索属性値を取得します。
-     * @return 検索属性値
+     * 検索タイプ値を取得します。
+     * @return 検索タイプ値
      */
-    public String getFindByValue() {
-        return findByValue;
+    public String getFindByVal() {
+        return findByVal;
     }
 
     /**
-     * 検索属性値を設定します。
-     * @param findByValue 検索属性値
+     * 検索タイプ値を設定します。
+     * @param findByVal 検索タイプ値
      */
-    public void setFindByValue(String findByValue) {
-        this.findByValue = findByValue;
+    public void setFindByVal(String findByVal) {
+        this.findByVal = findByVal;
     }
 
     /**

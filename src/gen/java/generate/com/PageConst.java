@@ -9,6 +9,15 @@ public class PageConst {
     /** HTMLタグ */
     public enum HtmlTag {
         input, select, textarea, a;
+
+        public static HtmlTag getEnum(String str) {
+            for (HtmlTag htmlTag : HtmlTag.values()) {
+                if (htmlTag.name().toLowerCase().equals(str.toLowerCase())) {
+                    return htmlTag;
+                }
+            }
+            return null;
+        }
     }
 
     /** 項目属性 */
@@ -19,6 +28,20 @@ public class PageConst {
             for (ItemAttr itemAttr : ItemAttr.values()) {
                 if (itemAttr.name().toLowerCase().equals(str.toLowerCase())) {
                     return itemAttr;
+                }
+            }
+            return null;
+        }
+    }
+
+    /** 項目Type属性 */
+    public enum ItemAttrType {
+        text, password, radio, file, img, button, submit;
+
+        public static ItemAttrType getEnum(String str) {
+            for (ItemAttrType itemAttrType : ItemAttrType.values()) {
+                if (itemAttrType.name().toLowerCase().equals(str.toLowerCase())) {
+                    return itemAttrType;
                 }
             }
             return null;
