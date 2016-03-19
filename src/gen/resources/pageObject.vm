@@ -9,113 +9,75 @@ import selenium.com.AbstractSeleniumPage;
 
 
 /**
- * ${pageBean.classNm}クラス<br>
+ * ${pageBean.name}クラス<br>
  */
-public class ${pageBean.classNm} extends AbstractSeleniumPage {
+public class ${pageBean.name} extends AbstractSeleniumPage {
 
     /* 項目変数宣言 ------------------------------------------------------------------------------------------------- */
-#foreach(${itemBean} in ${pageBean.allItemList})
-    @FindBy(${itemBean.findBy} = ${q}${itemBean.findByValue}${q})
+#foreach(${itemBean} in ${pageBean.itemList})
+    @FindBy(${itemBean.findBy} = ${q}${itemBean.findByVal}${q})
     @CacheLookup
-    /** ${itemBean.itemComment} */
+    /** ${itemBean.item} */
     private WebElement ${itemBean.item};
 
 #end
 
-    /* IE操作メソッド（input type=text） ---------------------------------------------------------------------------- */
-#foreach(${itemBean} in ${pageBean.textList})
+    /* IE操作メソッド ----------------------------------------------------------------------------------------------- */
+#foreach(${itemBean} in ${pageBean.itemList})
     /**
-     * ${itemBean.itemComment} に値を入力します。
+     * ${itemBean.item}に値を入力します。
      * @param sendKeys
      */
-    public void sendkeys${itemBean.itemUpper}(String sendKeys) {
+    public void sendkeys${itemBean.item}(String sendKeys) {
         this.${itemBean.item}.clear();
         this.${itemBean.item}.sendKeys(sendKeys);
     }
 
-#end
-
-    /* IE操作メソッド（textarea） ----------------------------------------------------------------------------------- */
-#foreach(${itemBean} in ${pageBean.textareaList})
     /**
-     * ${itemBean.itemComment} に値を入力します。
-     * @param sendKeys
+     * ${itemBean.item}の値を取得します。
+     * @return value
      */
-    public void sendkeys${itemBean.itemUpper}(String sendKeys) {
-        this.${itemBean.item}.clear();
-        this.${itemBean.item}.sendKeys(sendKeys);
+    public String getValue${itemBean.item}() {
+        return this.${itemBean.item}.value();
     }
 
-#end
-
-    /* IE操作メソッド（input type=radio） --------------------------------------------------------------------------- */
-#foreach(${itemBean} in ${pageBean.radioList})
     /**
-     * ${itemBean.itemComment} をクリックします。
+     * ${itemBean.item}の値を取得します。
+     * @return text
      */
-    public void click${itemBean.itemUpper}() {
+    public String getText${itemBean.item}() {
+        return this.${itemBean.item}.text();
+    }
+
+    /**
+     * ${itemBean.item}をクリックします。
+     */
+    public void click${itemBean.item}() {
         this.${itemBean.item}.click();
     }
 
-#end
-
-    /* IE操作メソッド（input type=checkbox） ------------------------------------------------------------------------ */
-#foreach(${itemBean} in ${pageBean.checkboxList})
     /**
-     * ${itemBean.itemComment} をクリックします。
-     */
-    public void click${itemBean.itemUpper}() {
-        this.${itemBean.item}.click();
-    }
-
-#end
-
-    /* IE操作メソッド（input type=button） -------------------------------------------------------------------------- */
-#foreach(${itemBean} in ${pageBean.buttonList})
-    /**
-     * ${itemBean.itemComment} をクリックします。
-     */
-    public void click${itemBean.itemUpper}() {
-        this.${itemBean.item}.click();
-    }
-
-#end
-
-    /* IE操作メソッド（anchor） ------------------------------------------------------------------------------------- */
-#foreach(${itemBean} in ${pageBean.anchorList})
-    /**
-     * ${itemBean.itemComment} をクリックします。
-     */
-    public void click${itemBean.itemUpper}() {
-        this.${itemBean.item}.click();
-    }
-
-#end
-
-    /* IE操作メソッド（select） ------------------------------------------------------------------------------------- */
-#foreach(${itemBean} in ${pageBean.selectList})
-    /**
-     * ${itemBean.itemComment} を選択します。
+     * ${itemBean.item}を選択します。
      * @param index
      */
-    public void selectByIndex${itemBean.itemUpper}(int index) {
-        new Select(${itemBean.item}).selectByIndex(index);
+    public void selectByIndex${itemBean.item}(int index) {
+        new Select(this.${itemBean.item}).selectByIndex(index);
     }
 
     /**
-     * ${itemBean.itemComment} を選択します。
+     * ${itemBean.item}を選択します。
      * @param value
      */
-    public void selectByValue${itemBean.itemUpper}(String value) {
-        new Select(${itemBean.item}).selectByValue(value);
+    public void selectByValue${itemBean.item}(String value) {
+        new Select(this.${itemBean.item}).selectByValue(value);
     }
 
     /**
-     * ${itemBean.itemComment} を選択します。
+     * ${itemBean.item} を選択します。
      * @param visibleText
      */
-    public void selectByVisibleText${itemBean.itemUpper}(String visibleText) {
-        new Select(${itemBean.item}).selectByVisibleText(visibleText);
+    public void selectByVisibleText${itemBean.item}(String visibleText) {
+        new Select(this.${itemBean.item}).selectByVisibleText(visibleText);
     }
 
 #end

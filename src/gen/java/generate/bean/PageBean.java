@@ -9,83 +9,26 @@ import java.util.List;
  */
 public class PageBean {
 
-    /** ページ名称（HTML） */
-    private String pageNmHtml;
-
-    /** ページ名称（Excel） */
-    private String pageNmExcel;
-
-    /** ページ名称（Java） */
-    private String pageNmJava;
-
-    /** ページタイトル */
-    private String title;
+    /** ページ名称 */
+    private String name;
 
     /** 項目リスト */
     private List<ItemBean> itemList = new ArrayList<>();
 
     /**
-     * ページ名称（HTML）を取得します。
-     * @return ページ名称（HTML）
+     * ページ名称を取得します。
+     * @return ページ名称
      */
-    public String getPageNmHtml() {
-        return pageNmHtml;
+    public String getName() {
+        return name;
     }
 
     /**
-     * ページ名称（HTML）を設定します。
-     * @param pageNmHtml ページ名称（HTML）
+     * ページ名称を設定します。
+     * @param name ページ名称
      */
-    public void setPageNmHtml(String pageNmHtml) {
-        this.pageNmHtml = pageNmHtml;
-    }
-
-    /**
-     * ページ名称（Excel）を取得します。
-     * @return ページ名称（Excel）
-     */
-    public String getPageNmExcel() {
-        return pageNmExcel;
-    }
-
-    /**
-     * ページ名称（Excel）を設定します。
-     * @param pageNmExcel ページ名称（Excel）
-     */
-    public void setPageNmExcel(String pageNmExcel) {
-        this.pageNmExcel = pageNmExcel;
-    }
-
-    /**
-     * ページ名称（Java）を取得します。
-     * @return ページ名称（Java）
-     */
-    public String getPageNmJava() {
-        return pageNmJava;
-    }
-
-    /**
-     * ページ名称（Java）を設定します。
-     * @param pageNmJava ページ名称（Java）
-     */
-    public void setPageNmJava(String pageNmJava) {
-        this.pageNmJava = pageNmJava;
-    }
-
-    /**
-     * ページタイトルを取得します。
-     * @return ページタイトル
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * ページタイトルを設定します。
-     * @param title ページタイトル
-     */
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -103,4 +46,5 @@ public class PageBean {
     public void setItemList(List<ItemBean> itemList) {
         this.itemList = itemList;
     }
+
 }

@@ -6,31 +6,64 @@ package generate.bean;
  */
 public class ItemBean {
 
+    /** HTML */
+    private String html;
+
+    /* ------------------------------- */
     /** 項目名 */
     private String item;
-    /** 項目名（先頭大文字） */
-    private String itemUpper;
-    /** 項目名（コメント用） */
-    private String itemComment;
-    /** タグ */
+    /** tag */
     private String tag;
-
-    /** 検索タイプ */
-    private String findBy;
-    /** 検索タイプ値 */
-    private String findByVal;
-
-    /** 値 */
+    /** type */
+    private String type;
+    /** id */
+    private String id;
+    /** name */
+    private String name;
+    /** value */
+    private String value;
+    /** text */
     private String text;
 
-    /** attrType */
-    private String attrType;
-    /** attrId */
-    private String attrId;
-    /** attrName */
-    private String attrName;
-    /** attrValue */
-    private String attrValue;
+    /* ------------------------------- */
+    /** 選択方法 */
+    private String findBy;
+    /** 選択方法の値 */
+    private String findByVal;
+    /** 選択方法の取得数 */
+    private String findByCnt;
+
+    /* ------------------------------- */
+    /** 値選択 */
+    private String operateSendKeys;
+    /** 値取得(value) */
+    private String operateGetValue;
+    /** 値取得(text) */
+    private String operateGetText;
+    /** クリック */
+    private String operateClick;
+    /** 選択(index) */
+    private String operateSelectIndex;
+    /** 選択(value) */
+    private String operateSelectValue;
+    /** 選択(text) */
+    private String operateSelectText;
+
+    /**
+     * HTMLを取得します。
+     * @return HTML
+     */
+    public String getHtml() {
+        return html;
+    }
+
+    /**
+     * HTMLを設定します。
+     * @param html HTML
+     */
+    public void setHtml(String html) {
+        this.html = html;
+    }
 
     /**
      * 項目名を取得します。
@@ -49,162 +82,262 @@ public class ItemBean {
     }
 
     /**
-     * 項目名（先頭大文字）を取得します。
-     * @return 項目名（先頭大文字）
-     */
-    public String getItemUpper() {
-        return itemUpper;
-    }
-
-    /**
-     * 項目名（先頭大文字）を設定します。
-     * @param itemUpper 項目名（先頭大文字）
-     */
-    public void setItemUpper(String itemUpper) {
-        this.itemUpper = itemUpper;
-    }
-
-    /**
-     * 項目名（コメント用）を取得します。
-     * @return 項目名（コメント用）
-     */
-    public String getItemComment() {
-        return itemComment;
-    }
-
-    /**
-     * 項目名（コメント用）を設定します。
-     * @param itemComment 項目名（コメント用）
-     */
-    public void setItemComment(String itemComment) {
-        this.itemComment = itemComment;
-    }
-
-    /**
-     * タグを取得します。
-     * @return タグ
+     * tagを取得します。
+     * @return tag
      */
     public String getTag() {
         return tag;
     }
 
     /**
-     * タグを設定します。
-     * @param tag タグ
+     * tagを設定します。
+     * @param tag tag
      */
     public void setTag(String tag) {
         this.tag = tag;
     }
 
     /**
-     * 検索タイプを取得します。
-     * @return 検索タイプ
+     * typeを取得します。
+     * @return type
      */
-    public String getFindBy() {
-        return findBy;
+    public String getType() {
+        return type;
     }
 
     /**
-     * 検索タイプを設定します。
-     * @param findBy 検索タイプ
+     * typeを設定します。
+     * @param type type
      */
-    public void setFindBy(String findBy) {
-        this.findBy = findBy;
+    public void setType(String type) {
+        this.type = type;
     }
 
     /**
-     * 検索タイプ値を取得します。
-     * @return 検索タイプ値
+     * idを取得します。
+     * @return id
      */
-    public String getFindByVal() {
-        return findByVal;
+    public String getId() {
+        return id;
     }
 
     /**
-     * 検索タイプ値を設定します。
-     * @param findByVal 検索タイプ値
+     * idを設定します。
+     * @param id id
      */
-    public void setFindByVal(String findByVal) {
-        this.findByVal = findByVal;
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
-     * 値を取得します。
-     * @return 値
+     * nameを取得します。
+     * @return name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * nameを設定します。
+     * @param name name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * valueを取得します。
+     * @return value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * valueを設定します。
+     * @param value value
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    /**
+     * textを取得します。
+     * @return text
      */
     public String getText() {
         return text;
     }
 
     /**
-     * 値を設定します。
-     * @param text 値
+     * textを設定します。
+     * @param text text
      */
     public void setText(String text) {
         this.text = text;
     }
 
     /**
-     * attrTypeを取得します。
-     * @return attrType
+     * 選択方法を取得します。
+     * @return 選択方法
      */
-    public String getAttrType() {
-        return attrType;
+    public String getFindBy() {
+        return findBy;
     }
 
     /**
-     * attrTypeを設定します。
-     * @param attrType attrType
+     * 選択方法を設定します。
+     * @param findBy 選択方法
      */
-    public void setAttrType(String attrType) {
-        this.attrType = attrType;
+    public void setFindBy(String findBy) {
+        this.findBy = findBy;
     }
 
     /**
-     * attrIdを取得します。
-     * @return attrId
+     * 選択方法の値を取得します。
+     * @return 選択方法の値
      */
-    public String getAttrId() {
-        return attrId;
+    public String getFindByVal() {
+        return findByVal;
     }
 
     /**
-     * attrIdを設定します。
-     * @param attrId attrId
+     * 選択方法の値を設定します。
+     * @param findByVal 選択方法の値
      */
-    public void setAttrId(String attrId) {
-        this.attrId = attrId;
+    public void setFindByVal(String findByVal) {
+        this.findByVal = findByVal;
     }
 
     /**
-     * attrNameを取得します。
-     * @return attrName
+     * 選択方法の取得数を取得します。
+     * @return 選択方法の取得数
      */
-    public String getAttrName() {
-        return attrName;
+    public String getFindByCnt() {
+        return findByCnt;
     }
 
     /**
-     * attrNameを設定します。
-     * @param attrName attrName
+     * 選択方法の取得数を設定します。
+     * @param findByCnt 選択方法の取得数
      */
-    public void setAttrName(String attrName) {
-        this.attrName = attrName;
+    public void setFindByCnt(String findByCnt) {
+        this.findByCnt = findByCnt;
     }
 
     /**
-     * attrValueを取得します。
-     * @return attrValue
+     * 値選択を取得します。
+     * @return 値選択
      */
-    public String getAttrValue() {
-        return attrValue;
+    public String getOperateSendKeys() {
+        return operateSendKeys;
     }
 
     /**
-     * attrValueを設定します。
-     * @param attrValue attrValue
+     * 値選択を設定します。
+     * @param operateSendKeys 値選択
      */
-    public void setAttrValue(String attrValue) {
-        this.attrValue = attrValue;
+    public void setOperateSendKeys(String operateSendKeys) {
+        this.operateSendKeys = operateSendKeys;
+    }
+
+    /**
+     * 値取得(value)を取得します。
+     * @return 値取得(value)
+     */
+    public String getOperateGetValue() {
+        return operateGetValue;
+    }
+
+    /**
+     * 値取得(value)を設定します。
+     * @param operateGetValue 値取得(value)
+     */
+    public void setOperateGetValue(String operateGetValue) {
+        this.operateGetValue = operateGetValue;
+    }
+
+    /**
+     * 値取得(text)を取得します。
+     * @return 値取得(text)
+     */
+    public String getOperateGetText() {
+        return operateGetText;
+    }
+
+    /**
+     * 値取得(text)を設定します。
+     * @param operateGetText 値取得(text)
+     */
+    public void setOperateGetText(String operateGetText) {
+        this.operateGetText = operateGetText;
+    }
+
+    /**
+     * クリックを取得します。
+     * @return クリック
+     */
+    public String getOperateClick() {
+        return operateClick;
+    }
+
+    /**
+     * クリックを設定します。
+     * @param operateClick クリック
+     */
+    public void setOperateClick(String operateClick) {
+        this.operateClick = operateClick;
+    }
+
+    /**
+     * 選択(index)を取得します。
+     * @return 選択(index)
+     */
+    public String getOperateSelectIndex() {
+        return operateSelectIndex;
+    }
+
+    /**
+     * 選択(index)を設定します。
+     * @param operateSelectIndex 選択(index)
+     */
+    public void setOperateSelectIndex(String operateSelectIndex) {
+        this.operateSelectIndex = operateSelectIndex;
+    }
+
+    /**
+     * 選択(value)を取得します。
+     * @return 選択(value)
+     */
+    public String getOperateSelectValue() {
+        return operateSelectValue;
+    }
+
+    /**
+     * 選択(value)を設定します。
+     * @param operateSelectValue 選択(value)
+     */
+    public void setOperateSelectValue(String operateSelectValue) {
+        this.operateSelectValue = operateSelectValue;
+    }
+
+    /**
+     * 選択(text)を取得します。
+     * @return 選択(text)
+     */
+    public String getOperateSelectText() {
+        return operateSelectText;
+    }
+
+    /**
+     * 選択(text)を設定します。
+     * @param operateSelectText 選択(text)
+     */
+    public void setOperateSelectText(String operateSelectText) {
+        this.operateSelectText = operateSelectText;
+    }
+
+    public String toString() {
+        return html;
     }
 }

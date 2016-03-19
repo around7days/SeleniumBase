@@ -1,10 +1,10 @@
 package generate.com;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +31,23 @@ public class GenerateUtils {
     }
 
     /**
-     * ファイルパスの取得
+     * ファイルパスから拡張子を除いたファイル名を取得<br>
+     * @param filePath
+     * @return ファイル名
+     */
+    public static String getFileNm(Path filePath) {
+        String fileNm = filePath.toFile().getName();
+        return fileNm.substring(0, fileNm.lastIndexOf("."));
+    }
+
+    /**
+     * ファイル名からファイルパスを取得
      * @param fileNm
      * @return path
      */
-    public static Path getFilePath(String fileNm) {
-        return Paths.get(GenerateUtils.class.getClass().getClassLoader().getResource(fileNm).getPath());
+    public static Path getPath(String fileNm) {
+        String path = GeneratePropertyManager.INSTANCE.getClass().getClassLoader().getResource(fileNm).getPath();
+        return new File(path).toPath();
     }
 
     /**

@@ -1,5 +1,6 @@
 package generate;
 
+import static generate.com.PageConst.*;
 import generate.bean.ItemBean;
 import generate.bean.PageBean;
 import generate.com.GeneratePropertyManager;
@@ -7,6 +8,7 @@ import generate.com.GenerateUtils;
 import generate.com.PageConst.FindBy;
 import generate.com.PageConst.HtmlTag;
 import generate.com.PageConst.ItemAttr;
+import generate.com.PageConst.ItemAttrType;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,7 +23,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
@@ -37,9 +38,6 @@ public class GenerateHtmlToExcel {
 
     /** プロパティ（generate） */
     private static final GeneratePropertyManager prop = GeneratePropertyManager.INSTANCE;
-
-    /** Excel明細上限 */
-    private static final int EXCEL_DETAIL_MAX = 100;
 
     /** 読み込むHTMLタグ情報 */
     private static StringJoiner htmlTags = new StringJoiner(",");
@@ -113,14 +111,8 @@ public class GenerateHtmlToExcel {
         // PageBeanの生成
         PageBean pageBean = new PageBean();
 
-        // ページ名称(html)の取得
-        pageBean.setPageNmHtml(path.getFileName().toString());
-
-        // ページ名称(Excel)の生成
-        pageBean.setPageNmExcel(getFileNm(path.getFileName().toString()) + ".xlsx");
-
-        // タイトルの取得
-        pageBean.setTitle(document.title());
+        // ページ名称の取得
+        pageBean.setName(GenerateUtils.getFileNm(path));
 
         // HTML項目情報リストの取得
         List<ItemBean> itemList = getItemList(document, htmlTags.toString());
@@ -144,9 +136,25 @@ public class GenerateHtmlToExcel {
             logger.debug(element.toString());
 
             // 項目情報の生成
-            ItemBean itemBean = new ItemBean();
+            ItemBean itemBean = existsItemBean(list, element);
+            if (itemBean == null) {
+                // 項目情報リストに含まれてい無い場合
+                // 新規生成
+                itemBean = new ItemBean();
+            } else {
+                // 項目情報リストに含まれている場合
+                // 取得数を「Multi」に変更して終了
+                itemBean.setFindByCnt(CNT_MULTI);
+                continue;
+            }
 
-            // 属性情報の設定
+            // HTMLを設定
+            itemBean.setHtml(element.toString());
+
+            // タグを設定
+            itemBean.setTag(element.tagName());
+
+            // type, id, name, valueの設定
             for (Attribute attr : element.attributes()) {
                 ItemAttr itemAttr = ItemAttr.getEnum(attr.getKey());
                 if (itemAttr == null) {
@@ -155,56 +163,47 @@ public class GenerateHtmlToExcel {
 
                 switch (itemAttr) {
                 case type:
-                    itemBean.setAttrType(attr.getValue());
+                    itemBean.setType(attr.getValue());
                     break;
                 case id:
-                    itemBean.setAttrId(attr.getValue());
+                    itemBean.setId(attr.getValue());
                     break;
                 case name:
-                    itemBean.setAttrName(attr.getValue());
+                    itemBean.setName(attr.getValue());
                     break;
                 case value:
-                    itemBean.setAttrValue(attr.getValue());
+                    itemBean.setValue(attr.getValue());
                     break;
                 }
             }
 
-            // タグ情報を設定
-            itemBean.setTag(element.tagName());
-
-            // 値情報を設定
-            itemBean.setText(element.text());
-
-            // 項目・検索タイプ情報の設定
-            String item = "";
-            String findBy = "";
-            String findByValue = "";
-            if (itemBean.getAttrId() != null) {
-                findBy = FindBy.id.name();
-                findByValue = itemBean.getAttrId();
-                item = itemBean.getAttrId();
-            } else if (itemBean.getAttrName() != null) {
-                findBy = FindBy.name.name();
-                findByValue = itemBean.getAttrName();
-                item = itemBean.getAttrName();
-            } else if (itemBean.getAttrValue() != null) {
-                findBy = FindBy.css.name();
-                findByValue = itemBean.getAttrValue();
-                item = itemBean.getAttrValue();
-            } else if (itemBean.getText() != null) {
-                findBy = FindBy.partialLinkText.name();
-                findByValue = itemBean.getText();
-                item = itemBean.getText();
+            // textの設定
+            if (itemBean.getValue() == null) {
+                String text = !element.text().isEmpty() ? element.text() : element.outerHtml();
+                itemBean.setText(text);
             }
-            itemBean.setItem(item);
-            itemBean.setFindBy(findBy);
-            itemBean.setFindByVal(findByValue);
 
             // リストに追加
             list.add(itemBean);
         }
 
         return list;
+    }
+
+    /**
+     * 項目情報の存在チェック
+     * @param list
+     * @param element
+     * @return [存在する:項目情報 存在しない:null]
+     */
+    private ItemBean existsItemBean(List<ItemBean> list,
+                                    Element element) {
+        for (ItemBean itemBean : list) {
+            if (element.toString().equals(itemBean.getHtml())) {
+                return itemBean;
+            }
+        }
+        return null;
     }
 
     /**
@@ -215,109 +214,143 @@ public class GenerateHtmlToExcel {
     private void generate(PageBean pageBean) throws IOException {
 
         // テンプレートファイルパスの取得
-        String templateFilePath = getClass().getClassLoader()
-                                            .getResource(prop.getString("excel.template.file"))
-                                            .getPath();
+        Path templateFilePath = GenerateUtils.getPath(prop.getString("excel.template.file"));
 
         // 出力先パスの取得
-        Path outPutFilePath = Paths.get(prop.getString("excel.output.file.dir"), pageBean.getPageNmExcel());
+        String fileNm = pageBean.getName() + ".xlsx";
+        Path outPutFilePath = Paths.get(prop.getString("excel.output.file.dir"), fileNm);
 
         // コピーしたテンプレートファイルに値を反映
-        try (FileInputStream fis = new FileInputStream(templateFilePath);
+        try (FileInputStream fis = new FileInputStream(templateFilePath.toFile());
                 Workbook workbook = new XSSFWorkbook(fis)) {
             // 先にcloseしておく。
             fis.close();
 
-            // Mainシートの設定
-            Sheet mainSheet = workbook.getSheet(prop.getString("excel.sheet.name.main"));
-            mainSheetSetting(pageBean, mainSheet);
+            /*
+             * Mainシートの設定
+             */
+            Sheet sheet = workbook.getSheet(prop.getString("excel.sheet.name"));
 
-            // Headerシートの設定
-            Sheet headerSheet = workbook.getSheet(prop.getString("excel.sheet.name.header"));
-            headerSheetSetting(pageBean, headerSheet);
+            // 値反映行を取得
+            int targetRow = prop.getInt("excel.start.row") - 1;
+            // 項目情報単位で設定
+            for (int i = 0; i < EXCEL_DETAIL_MAX; i++) {
+                // 項目情報の取り出し
+                ItemBean itemBean;
+                if (pageBean.getItemList().size() > i) {
+                    itemBean = pageBean.getItemList().get(i);
+                } else {
+                    itemBean = new ItemBean();
+                }
 
-            // 結果出力
-            // 出力
+                // FindBy情報を生成
+                makeFindByInfo(itemBean);
+                // Operate情報を生成
+                makeOperateInfo(itemBean);
+
+                // 出力列情報の取得
+                Row row = sheet.getRow(targetRow);
+
+                // HTML画面項目
+                setCellValue(row, "excel.item.col", itemBean.getItem()); // 項目名
+                setCellValue(row, "excel.item.tag.col", itemBean.getTag()); // tag
+                setCellValue(row, "excel.item.input.type.col", itemBean.getType()); // type
+                setCellValue(row, "excel.item.id.col", itemBean.getId()); // id
+                setCellValue(row, "excel.item.name.col", itemBean.getName()); // name
+                setCellValue(row, "excel.item.value.col", itemBean.getValue()); // value
+                setCellValue(row, "excel.item.text.col", itemBean.getText()); // text
+                // FindBy
+                setCellValue(row, "excel.item.findby.col", itemBean.getFindBy()); // 選択方法
+                setCellValue(row, "excel.item.findby.val.col", itemBean.getFindByVal()); // 選択値
+                setCellValue(row, "excel.item.findby.cnt.col", itemBean.getFindByCnt()); // 取得数
+                // Java実装
+                setCellValue(row, "excel.java.sendkeys.col", itemBean.getOperateSendKeys()); // 値設定
+                setCellValue(row, "excel.java.get.value.col", itemBean.getOperateGetValue()); // 値取得(value)
+                setCellValue(row, "excel.java.get.text.col", itemBean.getOperateGetText()); // 値取得(text)
+                setCellValue(row, "excel.java.click.col", itemBean.getOperateClick()); // クリック
+                setCellValue(row, "excel.java.select.index.col", itemBean.getOperateSelectIndex()); // 選択(index)
+                setCellValue(row, "excel.java.select.value.col", itemBean.getOperateSelectValue()); // 選択(value)
+                setCellValue(row, "excel.java.select.text.col", itemBean.getOperateSelectText()); // 選択(text)
+
+                targetRow++;
+            }
+
+            if (pageBean.getItemList().size() > EXCEL_DETAIL_MAX) {
+                logger.warn("Excel明細上限は{}件です。", EXCEL_DETAIL_MAX);
+            }
+
+            /*
+             * 結果出力
+             */
             workbook.write(new FileOutputStream(outPutFilePath.toString()));
             logger.debug("結果出力 : {}", outPutFilePath.toString());
         }
     }
 
     /**
-     * メインシートの設定
-     * @param pageBean
-     * @param sheet
+     * FindBy情報を生成
+     * @param itemBean
      */
-    private void mainSheetSetting(PageBean pageBean,
-                                  Sheet sheet) {
-        // HTML名称
-        setCellValue(sheet, prop.getString("excel.main.html.name.range"), pageBean.getPageNmHtml());
+    private void makeOperateInfo(ItemBean itemBean) {
+        String findBy = "";
+        String findByVal = "";
+        if (itemBean.getId() != null) {
+            findBy = FindBy.id.name();
+            findByVal = itemBean.getId();
+        } else if (itemBean.getName() != null) {
+            findBy = FindBy.name.name();
+            findByVal = itemBean.getName();
+        } else if (itemBean.getValue() != null) {
+            findBy = FindBy.css.name();
+            findByVal = itemBean.getValue();
+        } else if (itemBean.getText() != null) {
+            findBy = FindBy.partialLinkText.name();
+            findByVal = itemBean.getText();
+        }
+        itemBean.setFindBy(findBy);
+        itemBean.setFindByVal(findByVal);
 
-        // 値反映行を取得
-        int targetRow = prop.getInt("excel.main.detail.start.row") - 1;
-        // 項目情報単位で設定
-        for (int i = 0; i < EXCEL_DETAIL_MAX; i++) {
-            // 項目情報の取り出し
-            ItemBean itemBean;
-            if (pageBean.getItemList().size() > i) {
-                itemBean = pageBean.getItemList().get(i);
-            } else {
-                itemBean = new ItemBean();
+    }
+
+    /**
+     * Operate情報を生成
+     * @param itemBean
+     */
+    @SuppressWarnings("incomplete-switch")
+    private void makeFindByInfo(ItemBean itemBean) {
+        HtmlTag tag = HtmlTag.getEnum(itemBean.getTag());
+        if (tag != null) {
+            switch (tag) {
+            case a:
+                itemBean.setOperateClick(ON);
+                break;
+            case select:
+                itemBean.setOperateSelectIndex(ON);
+                itemBean.setOperateSelectText(ON);
+                itemBean.setOperateSelectValue(ON);
+                break;
+            case textarea:
+                itemBean.setOperateSendKeys(ON);
+                break;
             }
 
-            // 出力列情報の取得
-            Row row = sheet.getRow(targetRow);
-
-            // プロパティーキーが長いので省略用
-            final String key1 = "excel.main.detail.item.";
-            final String key2 = "excel.main.detail.implement.";
-
-            // 画面項目
-            setCellValue(row, (key1 + "name.col"), itemBean.getItem()); // 項目
-            setCellValue(row, (key1 + "comment.col"), itemBean.getItemComment()); // 項目名
-            String type = HtmlTag.input.name().equals(itemBean.getTag()) ? itemBean.getAttrType() : itemBean.getTag();
-            setCellValue(row, (key1 + "type.col"), type); // 分類
-            setCellValue(row, (key1 + "findby.col"), itemBean.getFindBy()); // 選択方法
-            setCellValue(row, (key1 + "findby.val.col"), itemBean.getFindByVal()); // 選択値
-            setCellValue(row, (key1 + "findby.cnt.col"), "単体"); // 該当数 XXX
-            // 実装内容 XXX
-            setCellValue(row, (key2 + "sendkeys.col"), ""); // 値設定
-            setCellValue(row, (key2 + "get.value.col"), ""); // 値取得(value)
-            setCellValue(row, (key2 + "get.text.col"), ""); // 値取得(text)
-            setCellValue(row, (key2 + "click.col"), ""); // クリック
-            setCellValue(row, (key2 + "select.index.col"), ""); // 選択(index)
-            setCellValue(row, (key2 + "select.value.col"), ""); // 選択(value)
-            setCellValue(row, (key2 + "select.text.col"), ""); // 選択(text)
-
-            targetRow++;
         }
 
-        if (pageBean.getItemList().size() > EXCEL_DETAIL_MAX) {
-            logger.warn("Excel明細上限は{}件です。", EXCEL_DETAIL_MAX);
+        ItemAttrType type = ItemAttrType.getEnum(itemBean.getType());
+        if (type != null) {
+            switch (type) {
+            case button:
+            case submit:
+            case radio:
+            case img:
+                itemBean.setOperateClick(ON);
+                break;
+            case text:
+            case password:
+                itemBean.setOperateSendKeys(ON);
+                break;
+            }
         }
-    }
-
-    /**
-     * ヘッダーシートの設定
-     * @param pageBean
-     * @param sheet
-     */
-    private void headerSheetSetting(PageBean pageBean,
-                                    Sheet sheet) {
-    }
-
-    /**
-     * Cellへの値反映
-     * @param sheet
-     * @param range
-     * @param value
-     */
-    private void setCellValue(Sheet sheet,
-                              String range,
-                              String value) {
-        CellReference cr = new CellReference(range);
-        Cell cell = sheet.getRow(cr.getRow()).getCell(cr.getCol());
-        cell.setCellValue(value);
     }
 
     /**
@@ -334,12 +367,4 @@ public class GenerateHtmlToExcel {
         cell.setCellValue(value);
     }
 
-    /**
-     * ファイル名から拡張子を除いたファイル名を取得<br>
-     * @param fileNm
-     * @return ファイル名
-     */
-    private String getFileNm(String fileNm) {
-        return fileNm.substring(0, fileNm.lastIndexOf("."));
-    }
 }
