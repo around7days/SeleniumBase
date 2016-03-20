@@ -9,9 +9,9 @@ import selenium.com.AbstractSeleniumPage;
 
 
 /**
- * ${pageBean.name}クラス<br>
+ * ${pageBean.name}Pageクラス<br>
  */
-public class ${pageBean.name} extends AbstractSeleniumPage {
+public class ${pageBean.name}Page extends AbstractSeleniumPage {
 
     /* 項目変数宣言 ------------------------------------------------------------------------------------------------- */
 #foreach(${itemBean} in ${pageBean.itemList})
@@ -24,6 +24,7 @@ public class ${pageBean.name} extends AbstractSeleniumPage {
 
     /* IE操作メソッド ----------------------------------------------------------------------------------------------- */
 #foreach(${itemBean} in ${pageBean.itemList})
+  #if(${itemBean.operateSendKeys} != "")
     /**
      * ${itemBean.item}に値を入力します。
      * @param sendKeys
@@ -32,7 +33,8 @@ public class ${pageBean.name} extends AbstractSeleniumPage {
         this.${itemBean.item}.clear();
         this.${itemBean.item}.sendKeys(sendKeys);
     }
-
+  #end
+  #if(${itemBean.operateGetValue} != "")
     /**
      * ${itemBean.item}の値を取得します。
      * @return value
@@ -40,7 +42,8 @@ public class ${pageBean.name} extends AbstractSeleniumPage {
     public String getValue${itemBean.item}() {
         return this.${itemBean.item}.value();
     }
-
+  #end
+  #if(${itemBean.operateGetText} != "")
     /**
      * ${itemBean.item}の値を取得します。
      * @return text
@@ -48,14 +51,16 @@ public class ${pageBean.name} extends AbstractSeleniumPage {
     public String getText${itemBean.item}() {
         return this.${itemBean.item}.text();
     }
-
+  #end
+  #if(${itemBean.operateClick} != "")
     /**
      * ${itemBean.item}をクリックします。
      */
     public void click${itemBean.item}() {
         this.${itemBean.item}.click();
     }
-
+  #end
+  #if(${itemBean.operateSelectIndex} != "")
     /**
      * ${itemBean.item}を選択します。
      * @param index
@@ -63,7 +68,8 @@ public class ${pageBean.name} extends AbstractSeleniumPage {
     public void selectByIndex${itemBean.item}(int index) {
         new Select(this.${itemBean.item}).selectByIndex(index);
     }
-
+  #end
+  #if(${itemBean.operateSelectValue} != "")
     /**
      * ${itemBean.item}を選択します。
      * @param value
@@ -71,7 +77,8 @@ public class ${pageBean.name} extends AbstractSeleniumPage {
     public void selectByValue${itemBean.item}(String value) {
         new Select(this.${itemBean.item}).selectByValue(value);
     }
-
+  #end
+  #if(${itemBean.operateSelectText} != "")
     /**
      * ${itemBean.item} を選択します。
      * @param visibleText
@@ -79,7 +86,7 @@ public class ${pageBean.name} extends AbstractSeleniumPage {
     public void selectByVisibleText${itemBean.item}(String visibleText) {
         new Select(this.${itemBean.item}).selectByVisibleText(visibleText);
     }
-
+  #end
 #end
 
 }
