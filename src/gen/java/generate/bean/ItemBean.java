@@ -1,5 +1,7 @@
 package generate.bean;
 
+import java.util.StringJoiner;
+
 /**
  * 項目情報
  * @author 7days
@@ -338,6 +340,13 @@ public class ItemBean {
     }
 
     public String toString() {
-        return html;
+        StringJoiner sj = new StringJoiner(",");
+        sj.add("tag:" + tag);
+        sj.add("type:" + type);
+        sj.add("id:" + id);
+        sj.add("name:" + name);
+        sj.add("value:" + value);
+        sj.add("text:" + text);
+        return sj.toString();
     }
 }

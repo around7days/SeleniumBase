@@ -129,24 +129,14 @@ public class GenerateHtmlToExcel {
      */
     private List<ItemBean> getItemList(Document document,
                                        String cssSelector) {
-        List<ItemBean> list = new ArrayList<>();
+        List<ItemBean> itemBeanList = new ArrayList<>();
 
         // 属性オブジェクトの取得
         for (Element element : document.select(cssSelector)) {
             logger.debug(element.toString());
 
             // 項目情報の生成
-            ItemBean itemBean = existsItemBean(list, element);
-            if (itemBean == null) {
-                // 項目情報リストに含まれてい無い場合
-                // 新規生成
-                itemBean = new ItemBean();
-            } else {
-                // 項目情報リストに含まれている場合
-                // 取得数を「Multi」に変更して終了
-                itemBean.setFindByCnt(CNT_MULTI);
-                continue;
-            }
+            ItemBean itemBean = new ItemBean();
 
             // HTMLを設定
             itemBean.setHtml(element.toString());
@@ -183,24 +173,34 @@ public class GenerateHtmlToExcel {
                 itemBean.setText(text);
             }
 
-            // リストに追加
-            list.add(itemBean);
+            // 項目情報リストに含まれているかチェック
+            ItemBean existsItemBean = existsItemBean(itemBeanList, itemBean);
+            if (existsItemBean != null) {
+                // 項目情報リストに含まれている場合
+                // 取り出した項目情報に対して、取得数を「Multi」に変更して終了
+                existsItemBean.setFindByCnt(CNT_MULTI);
+                continue;
+            }
+
+            // 項目情報リストに含まれていない場合
+            // 新規でリストに追加
+            itemBeanList.add(itemBean);
         }
 
-        return list;
+        return itemBeanList;
     }
 
     /**
      * 項目情報の存在チェック
-     * @param list
-     * @param element
+     * @param itemBeanList
+     * @param itemBean
      * @return [存在する:項目情報 存在しない:null]
      */
-    private ItemBean existsItemBean(List<ItemBean> list,
-                                    Element element) {
-        for (ItemBean itemBean : list) {
-            if (element.toString().equals(itemBean.getHtml())) {
-                return itemBean;
+    private ItemBean existsItemBean(List<ItemBean> itemBeanList,
+                                    ItemBean itemBean) {
+        for (ItemBean tempBean : itemBeanList) {
+            if (itemBean.toString().equals(tempBean.toString())) {
+                return tempBean;
             }
         }
         return null;
@@ -222,7 +222,7 @@ public class GenerateHtmlToExcel {
 
         // コピーしたテンプレートファイルに値を反映
         try (FileInputStream fis = new FileInputStream(templateFilePath.toFile());
-                Workbook workbook = new XSSFWorkbook(fis)) {
+             Workbook workbook = new XSSFWorkbook(fis)) {
             // 先にcloseしておく。
             fis.close();
 

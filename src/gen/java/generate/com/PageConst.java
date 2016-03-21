@@ -17,7 +17,7 @@ public class PageConst {
 
     /** HTMLタグ */
     public enum HtmlTag {
-        input, textarea, a, select, img;
+        input, textarea, a, select;
 
         public static HtmlTag getEnum(String str) {
             if (str == null) return null;
