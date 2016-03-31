@@ -58,7 +58,7 @@ public class GenerateExcelToJava {
         logger.debug("★getFileList");
         List<Path> fileList = getFileList();
         for (Path path : fileList) {
-            logger.debug("★対象Excelファイル : {}", path.toString());
+            logger.debug("対象Excelファイル : {}", path.toString());
 
             // Excelページ解析
             logger.debug("★analyze");
@@ -100,7 +100,7 @@ public class GenerateExcelToJava {
         // Excelファイルの読込
         try (FileInputStream fis = new FileInputStream(path.toFile());
                 Workbook workbook = new XSSFWorkbook(fis)) {
-            // 先にcloseしておく。
+            // 先にcloseしておく(重要)
             fis.close();
 
             /*
@@ -158,6 +158,10 @@ public class GenerateExcelToJava {
      */
     private void generate(PageBean pageBean) throws IOException {
 
+        // 出力ファイルパスの生成
+        String fileNm = pageBean.getName() + "Page" + ".java";
+        Path outputPath = Paths.get(prop.getString("java.output.file.dir"), fileNm);
+
         // Velocityの初期化
         Path velocityPropPath = GenerateUtils.getPath(prop.getString("velocity.property.file"));
         Velocity.init(velocityPropPath.toString());
@@ -172,21 +176,16 @@ public class GenerateExcelToJava {
         context.put("pageBean", pageBean);
         context.put("q", "\""); // ダブルクォーテーションのエスケープ
 
-        // 出力ファイルパスの生成
-        String fileNm = pageBean.getName() + ".java";
-        Path outputPath = Paths.get(prop.getString("java.output.file.dir"), fileNm);
-
         // テンプレートのマージ
         String javaEncoding = prop.getString("java.output.file.encoding");
-        PrintWriter pw = new PrintWriter(outputPath.toFile(), javaEncoding);
-        template.merge(context, pw);
+        try (PrintWriter pw = new PrintWriter(outputPath.toFile(), javaEncoding)) {
+            // マージ
+            template.merge(context, pw);
+            // フラッシュ
+            pw.flush();
+        }
 
-        // フラッシュ
-        pw.flush();
-
-        // クローズ
-        pw.close();
-
+        logger.debug("結果出力 : {}", outputPath.toString());
     }
 
     /**

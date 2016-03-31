@@ -72,7 +72,7 @@ public class GenerateHtmlToExcel {
         logger.debug("★getFileList");
         List<Path> fileList = getFileList();
         for (Path path : fileList) {
-            logger.debug("★対象HTMLファイル : {}", path.toString());
+            logger.debug("対象HTMLファイル : {}", path.toString());
 
             // HTMLページ解析
             logger.debug("★analyze");
@@ -223,7 +223,7 @@ public class GenerateHtmlToExcel {
         // コピーしたテンプレートファイルに値を反映
         try (FileInputStream fis = new FileInputStream(templateFilePath.toFile());
              Workbook workbook = new XSSFWorkbook(fis)) {
-            // 先にcloseしておく。
+            // 先にcloseしておく(重要)
             fis.close();
 
             /*
@@ -240,7 +240,7 @@ public class GenerateHtmlToExcel {
                 if (pageBean.getItemList().size() > i) {
                     itemBean = pageBean.getItemList().get(i);
                 } else {
-                    itemBean = new ItemBean();
+                    itemBean = new ItemBean(); // 空情報でExcelの項目を上書きする為に使用
                 }
 
                 // FindBy情報を生成
@@ -291,6 +291,55 @@ public class GenerateHtmlToExcel {
      * FindBy情報を生成
      * @param itemBean
      */
+    private void makeFindByInfo(ItemBean itemBean) {
+        // タグ情報で判断
+        HtmlTag tag = HtmlTag.getEnum(itemBean.getTag());
+        if (tag != null) {
+            switch (tag) {
+            case a:
+                itemBean.setOperateClick(ON);
+                break;
+            case select:
+                itemBean.setOperateSelectIndex(ON);
+                itemBean.setOperateSelectText(ON);
+                itemBean.setOperateSelectValue(ON);
+                break;
+            case textarea:
+                itemBean.setOperateSendKeys(ON);
+                break;
+            case input:
+                break;
+            case frame:
+                break;
+            }
+
+        }
+
+        // input type情報で判断
+        ItemAttrType type = ItemAttrType.getEnum(itemBean.getType());
+        if (type != null) {
+            switch (type) {
+            case checkbox:
+            case button:
+            case submit:
+            case radio:
+            case img:
+                itemBean.setOperateClick(ON);
+                break;
+            case text:
+            case password:
+                itemBean.setOperateSendKeys(ON);
+                break;
+            case file:
+                break;
+            }
+        }
+    }
+
+    /**
+     * Operate情報を生成
+     * @param itemBean
+     */
     private void makeOperateInfo(ItemBean itemBean) {
         String findBy = "";
         String findByVal = "";
@@ -310,47 +359,6 @@ public class GenerateHtmlToExcel {
         itemBean.setFindBy(findBy);
         itemBean.setFindByVal(findByVal);
 
-    }
-
-    /**
-     * Operate情報を生成
-     * @param itemBean
-     */
-    @SuppressWarnings("incomplete-switch")
-    private void makeFindByInfo(ItemBean itemBean) {
-        HtmlTag tag = HtmlTag.getEnum(itemBean.getTag());
-        if (tag != null) {
-            switch (tag) {
-            case a:
-                itemBean.setOperateClick(ON);
-                break;
-            case select:
-                itemBean.setOperateSelectIndex(ON);
-                itemBean.setOperateSelectText(ON);
-                itemBean.setOperateSelectValue(ON);
-                break;
-            case textarea:
-                itemBean.setOperateSendKeys(ON);
-                break;
-            }
-
-        }
-
-        ItemAttrType type = ItemAttrType.getEnum(itemBean.getType());
-        if (type != null) {
-            switch (type) {
-            case button:
-            case submit:
-            case radio:
-            case img:
-                itemBean.setOperateClick(ON);
-                break;
-            case text:
-            case password:
-                itemBean.setOperateSendKeys(ON);
-                break;
-            }
-        }
     }
 
     /**

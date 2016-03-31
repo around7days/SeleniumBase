@@ -1,5 +1,7 @@
 package selenium.sample.page;
 
+import java.util.List;
+
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
@@ -15,25 +17,53 @@ public class ${pageBean.name}Page extends AbstractSeleniumPage {
 
     /* 項目変数宣言 ------------------------------------------------------------------------------------------------- */
 #foreach(${itemBean} in ${pageBean.itemList})
+    /** ${itemBean.item} */
     @FindBy(${itemBean.findBy} = ${q}${itemBean.findByVal}${q})
     @CacheLookup
-    /** ${itemBean.item} */
+  #if(${itemBean.findByCnt} == "")
     private WebElement ${itemBean.item};
+  #end
+  #if(${itemBean.findByCnt} != "")
+    private List<WebElement> ${itemBean.item};
+  #end
 
 #end
 
     /* IE操作メソッド ----------------------------------------------------------------------------------------------- */
 #foreach(${itemBean} in ${pageBean.itemList})
+  ####### sendkeys
   #if(${itemBean.operateSendKeys} != "")
-    /**
-     * ${itemBean.item}に値を入力します。
-     * @param sendKeys
-     */
-    public void sendkeys${itemBean.item}(String sendKeys) {
-        this.${itemBean.item}.clear();
-        this.${itemBean.item}.sendKeys(sendKeys);
-    }
+    #if(${itemBean.findByCnt} == "")
+      /**
+       * ${itemBean.item}に値を入力します。
+       * @param sendKeys
+       */
+      public void sendkeys${itemBean.item}(String sendKeys) {
+          this.${itemBean.item}.clear();
+          this.${itemBean.item}.sendKeys(sendKeys);
+      }
+    #end
+    #if(${itemBean.findByCnt} != "")
+      /**
+       * ${itemBean.item}に値を入力します。
+       * @param sendKeys
+       */
+      public void sendkeys${itemBean.item}(String sendKeys) {
+          sendkeys${itemBean.item}(sendKeys, 0);
+      }
+      /**
+       * ${itemBean.item}に値を入力します。
+       * @param sendKeys
+       * @param index
+       */
+      public void sendkeys${itemBean.item}(String sendKeys, int index) {
+          this.${itemBean.item}.get(index).clear();
+          this.${itemBean.item}.get(index).sendKeys(sendKeys);
+      }
+    #end
   #end
+
+  ####### getValue
   #if(${itemBean.operateGetValue} != "")
     /**
      * ${itemBean.item}の値を取得します。
@@ -43,6 +73,8 @@ public class ${pageBean.name}Page extends AbstractSeleniumPage {
         return this.${itemBean.item}.value();
     }
   #end
+
+  ####### getText
   #if(${itemBean.operateGetText} != "")
     /**
      * ${itemBean.item}の値を取得します。
@@ -52,14 +84,35 @@ public class ${pageBean.name}Page extends AbstractSeleniumPage {
         return this.${itemBean.item}.text();
     }
   #end
+
+  ####### click
   #if(${itemBean.operateClick} != "")
-    /**
-     * ${itemBean.item}をクリックします。
-     */
-    public void click${itemBean.item}() {
-        this.${itemBean.item}.click();
-    }
+    #if(${itemBean.findByCnt} == "")
+      /**
+       * ${itemBean.item}をクリックします。
+       */
+      public void click${itemBean.item}() {
+          this.${itemBean.item}.click();
+      }
+    #end
+    #if(${itemBean.findByCnt} != "")
+      /**
+       * ${itemBean.item}をクリックします。
+       */
+      public void click${itemBean.item}() {
+          click${itemBean.item}(0);
+      }
+      /**
+       * ${itemBean.item}をクリックします。
+       * @param index
+       */
+      public void click${itemBean.item}(int index) {
+          this.${itemBean.item}.get(index).click();
+      }
+    #end
   #end
+
+  ####### selectByIndex
   #if(${itemBean.operateSelectIndex} != "")
     /**
      * ${itemBean.item}を選択します。
@@ -69,6 +122,8 @@ public class ${pageBean.name}Page extends AbstractSeleniumPage {
         new Select(this.${itemBean.item}).selectByIndex(index);
     }
   #end
+
+  ####### selectByValue
   #if(${itemBean.operateSelectValue} != "")
     /**
      * ${itemBean.item}を選択します。
@@ -78,6 +133,8 @@ public class ${pageBean.name}Page extends AbstractSeleniumPage {
         new Select(this.${itemBean.item}).selectByValue(value);
     }
   #end
+
+  ####### selectByVisibleText
   #if(${itemBean.operateSelectText} != "")
     /**
      * ${itemBean.item} を選択します。
@@ -87,6 +144,7 @@ public class ${pageBean.name}Page extends AbstractSeleniumPage {
         new Select(this.${itemBean.item}).selectByVisibleText(visibleText);
     }
   #end
+
 #end
 
 }
