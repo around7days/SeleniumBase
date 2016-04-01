@@ -98,8 +98,7 @@ public class GenerateExcelToJava {
         pageBean.setName(GenerateUtils.getFileNm(path));
 
         // Excelファイルの読込
-        try (FileInputStream fis = new FileInputStream(path.toFile());
-                Workbook workbook = new XSSFWorkbook(fis)) {
+        try (FileInputStream fis = new FileInputStream(path.toFile()); Workbook workbook = new XSSFWorkbook(fis)) {
             // 先にcloseしておく(重要)
             fis.close();
 
@@ -159,7 +158,7 @@ public class GenerateExcelToJava {
     private void generate(PageBean pageBean) throws IOException {
 
         // 出力ファイルパスの生成
-        String fileNm = pageBean.getName() + "Page" + ".java";
+        String fileNm = pageBean.getName() + ".java";
         Path outputPath = Paths.get(prop.getString("java.output.file.dir"), fileNm);
 
         // Velocityの初期化
