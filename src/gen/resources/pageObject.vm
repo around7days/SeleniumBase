@@ -11,9 +11,9 @@ import selenium.com.AbstractSeleniumPage;
 
 
 /**
- * ${pageBean.name}Pageクラス<br>
+ * ${pageBean.name}クラス<br>
  */
-public class ${pageBean.name}Page extends AbstractSeleniumPage {
+public class ${pageBean.name} extends AbstractSeleniumPage {
 
     /* 項目変数宣言 ------------------------------------------------------------------------------------------------- */
 #foreach(${itemBean} in ${pageBean.itemList})
