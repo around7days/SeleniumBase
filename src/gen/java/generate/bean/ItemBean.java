@@ -50,6 +50,8 @@ public class ItemBean {
     private String operateSelectValue;
     /** 選択(text) */
     private String operateSelectText;
+    /** Frame変更 */
+    private String operateFrameChange;
 
     /**
      * HTMLを取得します。
@@ -348,5 +350,21 @@ public class ItemBean {
         sj.add("value:" + value);
         sj.add("text:" + text);
         return sj.toString();
+    }
+
+    /**
+     * Frame変更を取得します。
+     * @return Frame変更
+     */
+    public String getOperateFrameChange() {
+        return operateFrameChange;
+    }
+
+    /**
+     * Frame変更を設定します。
+     * @param operateFrameChange Frame変更
+     */
+    public void setOperateFrameChange(String operateFrameChange) {
+        this.operateFrameChange = operateFrameChange;
     }
 }

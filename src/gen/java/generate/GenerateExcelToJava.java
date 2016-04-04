@@ -137,6 +137,7 @@ public class GenerateExcelToJava {
                 itemBean.setOperateSelectIndex(getCellValue(row, "excel.java.select.index.col")); // 選択(index)
                 itemBean.setOperateSelectValue(getCellValue(row, "excel.java.select.value.col")); // 選択(value)
                 itemBean.setOperateSelectText(getCellValue(row, "excel.java.select.text.col")); // 選択(text)
+                itemBean.setOperateFrameChange(getCellValue(row, "excel.java.frame.change.col")); // フレーム変更
 
                 targetRow++;
 

@@ -1,8 +1,11 @@
 package selenium.com;
 
+import java.util.List;
+
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriver.TargetLocator;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -31,12 +34,29 @@ public abstract class AbstractSelenium {
     protected static WebDriver driver = null;
 
     /**
+     * URLアクセス
+     * @param url
+     */
+    protected void $url(String url) {
+        driver.get(url);
+    }
+
+    /**
      * エレメント取得
      * @param by
      * @return WebElement
      */
     protected WebElement $(By by) {
         return driver.findElement(by);
+    }
+
+    /**
+     * エレメント取得
+     * @param by
+     * @return WebElement List
+     */
+    protected List<WebElement> $$(By by) {
+        return driver.findElements(by);
     }
 
     /**
@@ -62,8 +82,60 @@ public abstract class AbstractSelenium {
      * エレメント取得(alert)
      * @return Alert
      */
-    protected Alert $alert() {
+    protected Alert $switchToAlert() {
         return driver.switchTo().alert();
+    }
+
+    /**
+     * switchオブジェクトの取得
+     * @return TargetLocator
+     */
+    protected TargetLocator $switch() {
+        return driver.switchTo();
+    }
+
+    /**
+     * Frame一覧の取得
+     * @return WebElement List
+     */
+    protected List<WebElement> $$getFrameElements() {
+        return $$(By.tagName("frame"));
+    }
+
+    /**
+     * Frame変更
+     * @param index
+     * @return WebDriver
+     */
+    protected WebDriver $switchToFrame(int index) {
+        return driver.switchTo().frame(index);
+    }
+
+    /**
+     * Frame変更
+     * @param nameOrId
+     * @return WebDriver
+     */
+    protected WebDriver $switchToFrame(String nameOrId) {
+        return driver.switchTo().frame(nameOrId);
+    }
+
+    /**
+     * Frame変更
+     * @param frameElement
+     * @return WebDriver
+     */
+    protected WebDriver $switchToFrame(WebElement frameElement) {
+        return driver.switchTo().frame(frameElement);
+    }
+
+    /**
+     * Frame変更
+     * @param frameElement
+     * @return WebDriver
+     */
+    protected WebDriver $switchToParentFrame() {
+        return driver.switchTo().parentFrame();
     }
 
     /**
@@ -84,14 +156,5 @@ public abstract class AbstractSelenium {
      */
     protected WebDriverWait $wait(int seconds) {
         return new WebDriverWait(driver, seconds);
-    }
-
-    /**
-     * Sleep処理
-     * @param second 秒
-     * @throws InterruptedException
-     */
-    protected void sleep(int second) throws InterruptedException {
-        Thread.sleep(second * 1000);
     }
 }

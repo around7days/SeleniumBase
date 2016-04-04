@@ -2,6 +2,7 @@ package selenium.sample.page;
 
 import java.util.List;
 
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
@@ -142,6 +143,16 @@ public class ${pageBean.name} extends AbstractSeleniumPage {
      */
     public void selectByVisibleText${itemBean.item}(String visibleText) {
         new Select(this.${itemBean.item}).selectByVisibleText(visibleText);
+    }
+  #end
+
+  ####### frameChange
+  #if(${itemBean.operateFrameChange} != "")
+    /**
+     * 対象Frameを ${itemBean.item} に変更します。
+     */
+    public WebDriver frameChange${itemBean.item}() {
+        return driver.switchTo().frame(${itemBean.item});
     }
   #end
 

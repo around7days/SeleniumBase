@@ -271,6 +271,7 @@ public class GenerateHtmlToExcel {
                 setCellValue(row, "excel.java.select.index.col", itemBean.getOperateSelectIndex()); // 選択(index)
                 setCellValue(row, "excel.java.select.value.col", itemBean.getOperateSelectValue()); // 選択(value)
                 setCellValue(row, "excel.java.select.text.col", itemBean.getOperateSelectText()); // 選択(text)
+                setCellValue(row, "excel.java.frame.change.col", itemBean.getOperateFrameChange()); // Frame変更
 
                 targetRow++;
             }
@@ -310,6 +311,7 @@ public class GenerateHtmlToExcel {
             case input:
                 break;
             case frame:
+                itemBean.setOperateFrameChange(ON);
                 break;
             }
 
