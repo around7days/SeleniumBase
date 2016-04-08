@@ -293,6 +293,41 @@ public class GenerateHtmlToExcel {
      * @param itemBean
      */
     private void makeFindByInfo(ItemBean itemBean) {
+        String findBy = "";
+        String findByVal = "";
+        if (!GenerateUtils.isEmpty(itemBean.getId())) {
+            // id
+            findBy = FindBy.id.name();
+            findByVal = itemBean.getId();
+        } else if (!GenerateUtils.isEmpty(itemBean.getName())) {
+            // name
+            findBy = FindBy.name.name();
+            findByVal = itemBean.getName();
+        } else if (!GenerateUtils.isEmpty(itemBean.getValue())) {
+            // value
+            findBy = FindBy.css.name();
+            if (HtmlTag.input == HtmlTag.getEnum(itemBean.getTag())) {
+                // inputタグ
+                findByVal = "input[type='" + itemBean.getType() + "'][value='" + itemBean.getValue() + "']";
+            } else {
+                // その他タグ
+                findByVal = "input[value='" + itemBean.getValue() + "']";
+            }
+        } else if (!GenerateUtils.isEmpty(itemBean.getText())) {
+            // text
+            findBy = FindBy.partialLinkText.name();
+            findByVal = itemBean.getText();
+        }
+        itemBean.setFindBy(findBy);
+        itemBean.setFindByVal(findByVal);
+    }
+
+    /**
+     * Operate情報を生成
+     * @param itemBean
+     */
+    private void makeOperateInfo(ItemBean itemBean) {
+
         // タグ情報で判断
         HtmlTag tag = HtmlTag.getEnum(itemBean.getTag());
         if (tag != null) {
@@ -336,31 +371,6 @@ public class GenerateHtmlToExcel {
                 break;
             }
         }
-    }
-
-    /**
-     * Operate情報を生成
-     * @param itemBean
-     */
-    private void makeOperateInfo(ItemBean itemBean) {
-        String findBy = "";
-        String findByVal = "";
-        if (itemBean.getId() != null) {
-            findBy = FindBy.id.name();
-            findByVal = itemBean.getId();
-        } else if (itemBean.getName() != null) {
-            findBy = FindBy.name.name();
-            findByVal = itemBean.getName();
-        } else if (itemBean.getValue() != null) {
-            findBy = FindBy.css.name();
-            findByVal = itemBean.getValue();
-        } else if (itemBean.getText() != null) {
-            findBy = FindBy.partialLinkText.name();
-            findByVal = itemBean.getText();
-        }
-        itemBean.setFindBy(findBy);
-        itemBean.setFindByVal(findByVal);
-
     }
 
     /**

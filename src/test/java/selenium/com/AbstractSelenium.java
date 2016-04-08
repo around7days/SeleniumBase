@@ -1,6 +1,7 @@
 package selenium.com;
 
 import java.util.List;
+import java.util.Set;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -32,6 +33,9 @@ public abstract class AbstractSelenium {
 
     /** WebDriver */
     protected static WebDriver driver = null;
+
+    /** BaseWindowHandle */
+    protected static String baseWindowHandle = null;
 
     /**
      * URLアクセス
@@ -157,4 +161,34 @@ public abstract class AbstractSelenium {
     protected WebDriverWait $wait(int seconds) {
         return new WebDriverWait(driver, seconds);
     }
+
+    /**
+     * WindowHandleを切り替える（簡易版）<br>
+     *
+     * <pre>
+     * 現在のWindowHandle以外に切り替える仕様のため、
+     * ３つ以上WindowHandleが存在すると正しく動作しない可能性がある
+     * </pre>
+     */
+    protected void $switchToWindowHandle() {
+        // 現在のハンドルを取得
+        String currentHandle = driver.getWindowHandle();
+
+        // 現在開いているウィンドウのハンドルを取得
+        Set<String> windowList = driver.getWindowHandles();
+        for (String window : windowList) {
+            if (!currentHandle.equals(window)) {
+                // 親画面以外のhandleなら切替
+                driver.switchTo().window(window);
+            }
+        }
+    }
+
+    /**
+     * WindowHandleをベースに戻す<br>
+     */
+    protected void $switchToBaseWindowHandle() {
+        driver.switchTo().window(baseWindowHandle);
+    }
+
 }

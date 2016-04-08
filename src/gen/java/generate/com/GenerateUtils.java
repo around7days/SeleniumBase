@@ -63,4 +63,13 @@ public class GenerateUtils {
         }
     }
 
+    /**
+     * 空白チェック
+     * @param value
+     * @return 結果
+     */
+    public static boolean isEmpty(String value) {
+        return (value == null || value.isEmpty());
+    }
+
 }
