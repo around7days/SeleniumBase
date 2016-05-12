@@ -17,7 +17,7 @@ public class PageConst {
 
     /** HTMLタグ */
     public enum HtmlTag {
-        input, textarea, a, select, frame;
+        input, button, textarea, a, select, frame, form;
 
         public static HtmlTag getEnum(String str) {
             if (str == null) return null;
@@ -47,7 +47,7 @@ public class PageConst {
 
     /** 項目Type属性 */
     public enum ItemAttrType {
-        text, password, radio, file, img, checkbox, button, submit;
+        text, password, radio, file, imgage, checkbox, button, submit;
 
         public static ItemAttrType getEnum(String str) {
             if (str == null) return null;

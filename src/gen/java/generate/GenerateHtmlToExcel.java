@@ -333,6 +333,7 @@ public class GenerateHtmlToExcel {
         if (tag != null) {
             switch (tag) {
             case a:
+            case button:
                 itemBean.setOperateClick(ON);
                 break;
             case select:
@@ -348,6 +349,10 @@ public class GenerateHtmlToExcel {
             case frame:
                 itemBean.setOperateFrameChange(ON);
                 break;
+            case form:
+                break;
+            default:
+                break;
             }
 
         }
@@ -360,7 +365,7 @@ public class GenerateHtmlToExcel {
             case button:
             case submit:
             case radio:
-            case img:
+            case imgage:
                 itemBean.setOperateClick(ON);
                 break;
             case text:
