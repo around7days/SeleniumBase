@@ -50,7 +50,7 @@ public enum GeneratePropertyManager {
     public String getString(String key) {
         if (!rb.containsKey(key)) {
             logger.warn("not contains key : {}", key);
-            return "";
+            return null;
         }
         return rb.getString(key);
     }
