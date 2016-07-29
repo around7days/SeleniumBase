@@ -1,14 +1,6 @@
 package generate;
 
 import static generate.com.PageConst.*;
-import generate.bean.ItemBean;
-import generate.bean.PageBean;
-import generate.com.GeneratePropertyManager;
-import generate.com.GenerateUtils;
-import generate.com.PageConst.FindBy;
-import generate.com.PageConst.HtmlTag;
-import generate.com.PageConst.ItemAttr;
-import generate.com.PageConst.ItemAttrType;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,6 +22,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import generate.bean.ItemBean;
+import generate.bean.PageBean;
+import generate.com.GeneratePropertyManager;
+import generate.com.GenerateUtils;
+import generate.com.PageConst.FindBy;
+import generate.com.PageConst.HtmlTag;
+import generate.com.PageConst.ItemAttr;
+import generate.com.PageConst.ItemAttrType;
 
 public class GenerateHtmlToExcel {
 
@@ -53,13 +54,13 @@ public class GenerateHtmlToExcel {
      */
     public static void main(String[] args) {
 
-        logger.error("処理開始---------------------------------------------------------------------------------------");
+        logger.info("処理開始---------------------------------------------------------------------------------------");
         try {
             new GenerateHtmlToExcel().execute();
         } catch (Exception e) {
             logger.error("system error", e);
         }
-        logger.error("処理完了---------------------------------------------------------------------------------------");
+        logger.info("処理完了---------------------------------------------------------------------------------------");
     }
 
     /**
