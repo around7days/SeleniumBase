@@ -341,6 +341,7 @@ public class ItemBean {
         this.operateSelectText = operateSelectText;
     }
 
+    @Override
     public String toString() {
         StringJoiner sj = new StringJoiner(",");
         sj.add("tag:" + tag);

@@ -91,7 +91,7 @@ public class SeleniumCapture {
 
     /**
      * キャプチャ取得（名前自動）<br>
-     * 　　※アラートメッセージ専用
+     * ※アラートメッセージ専用
      * @param alert
      * @throws IOException
      */
