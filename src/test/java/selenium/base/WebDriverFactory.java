@@ -1,4 +1,4 @@
-package selenium.com;
+package selenium.base;
 
 import java.util.concurrent.TimeUnit;
 
