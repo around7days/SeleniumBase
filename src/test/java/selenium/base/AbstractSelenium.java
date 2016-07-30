@@ -1,4 +1,4 @@
-package selenium.com;
+package selenium.base;
 
 import java.util.List;
 import java.util.Set;
@@ -13,7 +13,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import selenium.com.WebDriverFactory.Browser;
+import selenium.base.WebDriverFactory.Browser;
 
 /**
  * Selenium抽象クラス

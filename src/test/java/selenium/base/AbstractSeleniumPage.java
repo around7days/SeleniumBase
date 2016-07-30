@@ -1,4 +1,4 @@
-package selenium.com;
+package selenium.base;
 
 import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;

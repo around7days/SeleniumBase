@@ -1,4 +1,4 @@
-package selenium.com;
+package selenium.base;
 
 import org.junit.After;
 import org.junit.AfterClass;

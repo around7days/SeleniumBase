@@ -1,4 +1,4 @@
-package selenium.com;
+package selenium.base;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
