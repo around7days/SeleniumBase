@@ -24,10 +24,11 @@ repositories {
 
 dependencies {
     // apache commons
-    compile group: 'commons-collections', name: 'commons-collections', version: '3.+'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '+'
+//    compile group: 'commons-collections', name: 'commons-collections', version: '3.+'
 
     // logging
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
+//    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '+'
 
     // junit & selenium

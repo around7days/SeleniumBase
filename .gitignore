@@ -1,8 +1,4 @@
 /bin/
-/build/
-/.gradle/
 /.settings/
 /.classpath
 /.project
-/capture/
-/generate/
