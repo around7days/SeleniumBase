@@ -24,8 +24,8 @@ public abstract class AbstractSeleniumTest extends AbstractSelenium {
 
     @BeforeClass
     public static void init() throws Exception {
-        logger.debug("処理開始 --------------------------------------------------------------------------------------");
-        logger.debug("open web browser : {}", browser.name());
+        logger.info("処理開始 ---------------------------------------------------------------------------------------");
+        logger.debug("open web browser -> {}", browser.name());
         /* Webブラウザの起動 */
         driver = WebDriverFactory.create(browser);
         baseWindowHandle = driver.getWindowHandle();
@@ -45,11 +45,11 @@ public abstract class AbstractSeleniumTest extends AbstractSelenium {
 
     @AfterClass
     public static void finish() throws Exception {
-        logger.debug("close web browser : {}", browser.name());
+        logger.debug("close web browser -> {}", browser.name());
         Thread.sleep(waitTime);
         /* Webブラウザの終了 */
         driver.quit();
-        logger.debug("処理終了 --------------------------------------------------------------------------------------");
+        logger.info("処理終了 ---------------------------------------------------------------------------------------");
     }
 
     // // 失敗したときはキャプチャを取得

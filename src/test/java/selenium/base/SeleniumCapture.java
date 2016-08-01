@@ -44,6 +44,20 @@ public class SeleniumCapture {
     private String prefix = "";
 
     /**
+     * キャプチャ出力先生成
+     */
+    {
+        if (!outputSuccessDir.toFile().isDirectory()) {
+            logger.info("create capture success dir -> {}", outputSuccessDir.toAbsolutePath().normalize());
+            outputSuccessDir.toFile().mkdirs();
+        }
+        if (!outputErrorDir.toFile().isDirectory()) {
+            logger.info("create capture error dir -> {}", outputSuccessDir.toAbsolutePath().normalize());
+            outputErrorDir.toFile().mkdirs();
+        }
+    }
+
+    /**
      * コンストラクタ
      * @param driver
      */
@@ -82,7 +96,7 @@ public class SeleniumCapture {
      * @throws IOException
      */
     public void screenShot(Path path) throws IOException {
-        logger.debug("capture : {}", path.toString());
+        logger.debug("capture -> {}", path.toString());
 
         // 出力
         TakesScreenshot screen = (TakesScreenshot) driver;
@@ -100,7 +114,7 @@ public class SeleniumCapture {
         String fileNm = prefix + getSysDateTime() + TEXT_EXTENSION;
         Path path = outputSuccessDir.resolve(fileNm);
 
-        logger.debug("capture : {}", path.toString());
+        logger.debug("capture -> {}", path.toString());
 
         // 出力
         try (BufferedWriter bw = Files.newBufferedWriter(path, StandardOpenOption.CREATE_NEW)) {

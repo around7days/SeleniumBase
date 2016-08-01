@@ -55,7 +55,7 @@ public class WebDriverFactory {
          */
         switch (browser) {
         case IE:
-            logger.debug("create driver : {}", InternetExplorerDriver.class.getName());
+            logger.debug("create driver -> {}", InternetExplorerDriver.class.getName());
             // ドライバー設定
             System.setProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY, prop.getString("driver.url.ie"));
             // XXX 保護モードチェックエラースルー？
@@ -65,14 +65,14 @@ public class WebDriverFactory {
             driver = new InternetExplorerDriver();
             break;
         case CHROME:
-            logger.debug("create driver : {}", ChromeDriver.class.getName());
+            logger.debug("create driver -> {}", ChromeDriver.class.getName());
             // ドライバー設定
             System.setProperty(ChromeDriverService.CHROME_DRIVER_EXE_PROPERTY, prop.getString("driver.url.chrome"));
             // 生成
             driver = new ChromeDriver();
             break;
         case FIREFOX:
-            logger.debug("create driver : {}", FirefoxDriver.class.getName());
+            logger.debug("create driver -> {}", FirefoxDriver.class.getName());
             // 生成
             driver = new FirefoxDriver();
             break;

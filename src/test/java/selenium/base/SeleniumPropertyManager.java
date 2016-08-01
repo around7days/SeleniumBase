@@ -27,7 +27,7 @@ public enum SeleniumPropertyManager {
     static {
         TreeSet<String> keys = new TreeSet<String>(rb.keySet());
         for (String key : keys) {
-            String val = String.format("%-30s", key) + " : " + rb.getString(key);
+            String val = String.format("%-30s", key) + " -> " + rb.getString(key);
             logger.debug(val);
         }
     }
@@ -39,7 +39,7 @@ public enum SeleniumPropertyManager {
      */
     public String getString(String key) {
         if (!rb.containsKey(key)) {
-            logger.warn("not contains key : {}", key);
+            logger.warn("not contains key -> {}", key);
             return "";
         }
         return rb.getString(key);

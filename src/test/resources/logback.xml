@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE logback>
 <configuration>
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<target>System.out</target>
@@ -7,8 +8,10 @@
 		</encoder>
 	</appender>
 
-	<root>
-		<level value="DEBUG" />
+	<logger name="selenium.base" level="DEBUG" />
+
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>
+
 </configuration>
