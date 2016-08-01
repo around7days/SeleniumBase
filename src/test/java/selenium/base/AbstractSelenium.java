@@ -46,6 +46,14 @@ public abstract class AbstractSelenium {
     }
 
     /**
+     * タイトル取得
+     * @return title
+     */
+    protected String $getTitle() {
+        return driver.getTitle();
+    }
+
+    /**
      * エレメント取得
      * @param by
      * @return WebElement

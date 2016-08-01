@@ -32,10 +32,12 @@ public class SeleniumCapture {
     private static final String IMAGE_EXTENSION = ".jpg";
     /** ファイル名：拡張子（テキスト） */
     private static final String TEXT_EXTENSION = ".txt";
+    /** ファイル名：日付フォーマット */
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
-    /** 出力先ディレクトリ（通常時） */
+    /** 出力先ディレクトリ：通常時 */
     private static final Path outputSuccessDir = Paths.get(prop.getString("capture.dir.success"));
-    /** 出力先ディレクトリ（エラー時） */
+    /** 出力先ディレクトリ：エラー時 */
     private static final Path outputErrorDir = Paths.get(prop.getString("capture.dir.error"));
 
     /** WebDriver */
@@ -44,14 +46,14 @@ public class SeleniumCapture {
     private String prefix = "";
 
     /**
-     * キャプチャ出力先生成
+     * 出力先ディレクトリの生成
      */
-    {
-        if (!outputSuccessDir.toFile().isDirectory()) {
+    static {
+        if (!outputSuccessDir.toFile().exists()) {
             logger.info("create capture success dir -> {}", outputSuccessDir.toAbsolutePath().normalize());
             outputSuccessDir.toFile().mkdirs();
         }
-        if (!outputErrorDir.toFile().isDirectory()) {
+        if (!outputErrorDir.toFile().exists()) {
             logger.info("create capture error dir -> {}", outputSuccessDir.toAbsolutePath().normalize());
             outputErrorDir.toFile().mkdirs();
         }
@@ -139,19 +141,11 @@ public class SeleniumCapture {
     }
 
     /**
-     * 出力先ディレクトリ生成
-     */
-    public static void createOutputDir() {
-        outputSuccessDir.toFile().mkdirs();
-        outputErrorDir.toFile().mkdirs();
-    }
-
-    /**
      * 現在時刻の取得
-     * @return
+     * @return dateTime
      */
     private static String getSysDateTime() {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS"));
+        return LocalDateTime.now().format(dateTimeFormatter);
     }
 
 }
