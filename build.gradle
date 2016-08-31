@@ -10,12 +10,8 @@ jar {
     }
 }
 
-// Gralde標準外のソースパスを追加
-sourceSets {
-    gen {
-        java      { srcDir 'src/java' }
-        resources { srcDir 'src/resources' }
-    }
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
 repositories {
