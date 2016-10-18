@@ -28,6 +28,6 @@ dependencies {
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '+'
 
     // junit & selenium
-    testCompile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '2.+'
+    testCompile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.+'
     testCompile group: 'junit', name: 'junit', version: '+'
 }

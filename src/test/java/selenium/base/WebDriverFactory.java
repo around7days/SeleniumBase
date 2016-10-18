@@ -58,7 +58,7 @@ public class WebDriverFactory {
             logger.debug("create driver -> {}", InternetExplorerDriver.class.getName());
             // ドライバー設定
             System.setProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY, prop.getString("driver.url.ie"));
-            // XXX 保護モードチェックエラースルー？
+            // XXX 保護モードチェックエラースルー
             DesiredCapabilities capability = DesiredCapabilities.internetExplorer();
             capability.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
             // 生成

@@ -50,11 +50,11 @@ public class SeleniumCapture {
      */
     static {
         if (!outputSuccessDir.toFile().exists()) {
-            logger.info("create capture success dir -> {}", outputSuccessDir.toAbsolutePath().normalize());
+            logger.info("create capture dir -> {}", outputSuccessDir.toAbsolutePath().normalize());
             outputSuccessDir.toFile().mkdirs();
         }
         if (!outputErrorDir.toFile().exists()) {
-            logger.info("create capture error dir -> {}", outputSuccessDir.toAbsolutePath().normalize());
+            logger.info("create capture dir -> {}", outputSuccessDir.toAbsolutePath().normalize());
             outputErrorDir.toFile().mkdirs();
         }
     }
