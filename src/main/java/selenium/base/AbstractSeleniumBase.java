@@ -16,14 +16,14 @@ import org.slf4j.LoggerFactory;
 import selenium.base.WebDriverFactory.Browser;
 
 /**
- * Selenium抽象クラス
+ * SeleniumBase抽象クラス
  * @author 7days
  */
-public abstract class AbstractSelenium {
+public abstract class AbstractSeleniumBase {
 
     /** ロガー */
     @SuppressWarnings("unused")
-    private static final Logger logger = LoggerFactory.getLogger(AbstractSelenium.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractSeleniumBase.class);
 
     /** プロパティ */
     protected static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;

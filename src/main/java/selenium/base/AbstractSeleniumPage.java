@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
  * SeleniumPage抽象クラス
  * @author 7days
  */
-public abstract class AbstractSeleniumPage extends AbstractSelenium {
+public abstract class AbstractSeleniumPage extends AbstractSeleniumBase {
 
     /** ロガー */
     @SuppressWarnings("unused")

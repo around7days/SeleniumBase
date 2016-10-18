@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * SeleniumTest抽象クラス
  * @author 7days
  */
-public abstract class AbstractSeleniumTest extends AbstractSelenium {
+public abstract class AbstractSeleniumTest extends AbstractSeleniumBase {
 
     /** ロガー */
     private static final Logger logger = LoggerFactory.getLogger(AbstractSeleniumTest.class);
