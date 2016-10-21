@@ -47,7 +47,9 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumBase {
 
     @After
     public void after() throws Exception {
+        /* 初期化 */
         capture.setPrefix("");
+        driver.manage().deleteAllCookies();
         logger.debug("テストケース終了 ------------------------------------------------------------------------------");
     }
 

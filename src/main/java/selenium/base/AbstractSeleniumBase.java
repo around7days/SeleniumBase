@@ -72,16 +72,6 @@ public abstract class AbstractSeleniumBase {
     }
 
     /**
-     * エレメント取得(button)<br>
-     * input type="button" value="文字列"
-     * @param value 文字列
-     * @return WebElement
-     */
-    protected WebElement $buttonVal(String value) {
-        return driver.findElement(By.cssSelector("input[type='button'][value='" + value + "']"));
-    }
-
-    /**
      * エレメント取得(selectBox)
      * @param by
      * @return Select

@@ -7,7 +7,9 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -58,23 +60,37 @@ public class WebDriverFactory {
             logger.debug("create driver -> {}", InternetExplorerDriver.class.getName());
             // ドライバー設定
             System.setProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY, prop.getString("driver.url.ie"));
-            // XXX 保護モードチェックエラースルー
+
+            // オプション設定
             DesiredCapabilities capability = DesiredCapabilities.internetExplorer();
+            // 保護モードチェックエラースルー
             capability.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+
             // 生成
-            driver = new InternetExplorerDriver();
+            driver = new InternetExplorerDriver(capability);
             break;
+
         case CHROME:
             logger.debug("create driver -> {}", ChromeDriver.class.getName());
             // ドライバー設定
             System.setProperty(ChromeDriverService.CHROME_DRIVER_EXE_PROPERTY, prop.getString("driver.url.chrome"));
+
+            // オプション設定
+            ChromeOptions options = new ChromeOptions();
+
             // 生成
-            driver = new ChromeDriver();
+            driver = new ChromeDriver(options);
             break;
+
         case FIREFOX:
             logger.debug("create driver -> {}", FirefoxDriver.class.getName());
+            // ドライバー設定
+
+            // オプション設定
+            FirefoxProfile profile = new FirefoxProfile();
+
             // 生成
-            driver = new FirefoxDriver();
+            driver = new FirefoxDriver(profile);
             break;
         }
 
