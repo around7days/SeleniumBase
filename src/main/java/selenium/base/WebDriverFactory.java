@@ -77,6 +77,7 @@ public class WebDriverFactory {
 
             // オプション設定
             ChromeOptions options = new ChromeOptions();
+            options.addArguments("--disable-extensions"); // 拡張機能無効化
 
             // 生成
             driver = new ChromeDriver(options);
