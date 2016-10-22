@@ -6,23 +6,38 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TestName;
+import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import selenium.base.WebDriverFactory.Browser;
 
 /**
  * SeleniumTest抽象クラス
  * @author 7days
  */
-public abstract class AbstractSeleniumTest extends AbstractSeleniumBase {
+public abstract class AbstractSeleniumTest {
 
     /** ロガー */
     private static final Logger logger = LoggerFactory.getLogger(AbstractSeleniumTest.class);
 
+    /** プロパティ */
+    private static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
+
+    /** 実行ブラウザ */
+    private static final Browser browser = Browser.getEnum(prop.getString("execute.browser"));
+
+    /** WebDriver */
+    protected static WebDriver driver = null;
+
+    /** BaseWindowHandle */
+    protected static String baseWindowHandle = null;
+
     /** Capture */
     protected static SeleniumCapture capture;
 
-    /** 待機（秒） */
-    private static int waitTime = 2 * 1000;
+    /** Helper */
+    protected static SeleniumHelper helper;
 
     /** テスト名 */
     @Rule
@@ -37,6 +52,8 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumBase {
         baseWindowHandle = driver.getWindowHandle();
         /* Captureの生成 */
         capture = new SeleniumCapture(driver);
+        /* Helperの生成 */
+        helper = new SeleniumHelper(driver, baseWindowHandle);
     }
 
     @Before
@@ -56,7 +73,6 @@ public abstract class AbstractSeleniumTest extends AbstractSeleniumBase {
     @AfterClass
     public static void finish() throws Exception {
         logger.debug("close web browser -> {}", browser.name());
-        Thread.sleep(waitTime);
         /* Webブラウザの終了 */
         driver.quit();
         logger.info("処理終了 ---------------------------------------------------------------------------------------");

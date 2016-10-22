@@ -10,38 +10,45 @@ import org.openqa.selenium.WebDriver.TargetLocator;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import selenium.base.WebDriverFactory.Browser;
 
 /**
- * SeleniumBase抽象クラス
+ * Selenium操作のヘルパークラス
  * @author 7days
  */
-public abstract class AbstractSeleniumBase {
-
-    /** ロガー */
-    @SuppressWarnings("unused")
-    private static final Logger logger = LoggerFactory.getLogger(AbstractSeleniumBase.class);
+public class SeleniumHelper {
 
     /** プロパティ */
     protected static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
 
-    /** 実行ブラウザ */
-    protected static final Browser browser = Browser.getEnum(prop.getString("execute.browser"));
-
     /** WebDriver */
-    protected static WebDriver driver = null;
+    private WebDriver driver;
 
     /** BaseWindowHandle */
-    protected static String baseWindowHandle = null;
+    private String baseWindowHandle;
+
+    /**
+     * コンストラクタ
+     * @param driver
+     */
+    SeleniumHelper(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    /**
+     * コンストラクタ
+     * @param driver
+     * @param baseWindowHandle
+     */
+    SeleniumHelper(WebDriver driver, String baseWindowHandle) {
+        this.driver = driver;
+        this.baseWindowHandle = baseWindowHandle;
+    }
 
     /**
      * URLアクセス
      * @param url
      */
-    protected void $url(String url) {
+    public void url(String url) {
         driver.get(url);
     }
 
@@ -49,7 +56,7 @@ public abstract class AbstractSeleniumBase {
      * タイトル取得
      * @return title
      */
-    protected String $getTitle() {
+    public String getTitle() {
         return driver.getTitle();
     }
 
@@ -58,7 +65,7 @@ public abstract class AbstractSeleniumBase {
      * @param by
      * @return WebElement
      */
-    protected WebElement $(By by) {
+    public WebElement $(By by) {
         return driver.findElement(by);
     }
 
@@ -67,7 +74,7 @@ public abstract class AbstractSeleniumBase {
      * @param by
      * @return WebElement List
      */
-    protected List<WebElement> $$(By by) {
+    public List<WebElement> $$(By by) {
         return driver.findElements(by);
     }
 
@@ -76,7 +83,7 @@ public abstract class AbstractSeleniumBase {
      * @param by
      * @return Select
      */
-    protected Select $select(By by) {
+    public Select $select(By by) {
         return new Select(driver.findElement(by));
     }
 
@@ -84,7 +91,7 @@ public abstract class AbstractSeleniumBase {
      * エレメント取得(alert)
      * @return Alert
      */
-    protected Alert $switchToAlert() {
+    public Alert $switchToAlert() {
         return driver.switchTo().alert();
     }
 
@@ -92,7 +99,7 @@ public abstract class AbstractSeleniumBase {
      * switchオブジェクトの取得
      * @return TargetLocator
      */
-    protected TargetLocator $switch() {
+    public TargetLocator $switch() {
         return driver.switchTo();
     }
 
@@ -100,7 +107,7 @@ public abstract class AbstractSeleniumBase {
      * Frame一覧の取得
      * @return WebElement List
      */
-    protected List<WebElement> $$getFrameElements() {
+    public List<WebElement> $$frame() {
         return $$(By.tagName("frame"));
     }
 
@@ -109,7 +116,7 @@ public abstract class AbstractSeleniumBase {
      * @param index
      * @return WebDriver
      */
-    protected WebDriver $switchToFrame(int index) {
+    public WebDriver $switchToFrame(int index) {
         return driver.switchTo().frame(index);
     }
 
@@ -118,7 +125,7 @@ public abstract class AbstractSeleniumBase {
      * @param nameOrId
      * @return WebDriver
      */
-    protected WebDriver $switchToFrame(String nameOrId) {
+    public WebDriver $switchToFrame(String nameOrId) {
         return driver.switchTo().frame(nameOrId);
     }
 
@@ -127,7 +134,7 @@ public abstract class AbstractSeleniumBase {
      * @param frameElement
      * @return WebDriver
      */
-    protected WebDriver $switchToFrame(WebElement frameElement) {
+    public WebDriver $switchToFrame(WebElement frameElement) {
         return driver.switchTo().frame(frameElement);
     }
 
@@ -136,7 +143,7 @@ public abstract class AbstractSeleniumBase {
      * @param frameElement
      * @return WebDriver
      */
-    protected WebDriver $switchToParentFrame() {
+    public WebDriver $switchToParentFrame() {
         return driver.switchTo().parentFrame();
     }
 
@@ -145,7 +152,7 @@ public abstract class AbstractSeleniumBase {
      * （明示的な待機）
      * @return WebDriverWait
      */
-    protected WebDriverWait $wait() {
+    public WebDriverWait $wait() {
         String waitDefault = prop.getString("wait.explicit.default");
         return $wait(Integer.valueOf(waitDefault));
     }
@@ -156,7 +163,7 @@ public abstract class AbstractSeleniumBase {
      * @param seconds 待機秒
      * @return WebDriverWait
      */
-    protected WebDriverWait $wait(int seconds) {
+    public WebDriverWait $wait(int seconds) {
         return new WebDriverWait(driver, seconds);
     }
 
@@ -168,7 +175,7 @@ public abstract class AbstractSeleniumBase {
      * ３つ以上WindowHandleが存在すると正しく動作しない可能性がある
      * </pre>
      */
-    protected void $switchToWindowHandle() {
+    public void $switchToWindowHandle() {
         // 現在のハンドルを取得
         String currentHandle = driver.getWindowHandle();
 
@@ -185,8 +192,36 @@ public abstract class AbstractSeleniumBase {
     /**
      * WindowHandleをベースに戻す<br>
      */
-    protected void $switchToBaseWindowHandle() {
+    public void $switchToBaseWindowHandle() {
         driver.switchTo().window(baseWindowHandle);
     }
 
+    /**
+     * valueの値を取得
+     * @param element
+     * @return
+     */
+    public String getValue(WebElement element) {
+        return element.getAttribute("value");
+    }
+
+    /**
+     * 選択されているセレクトボックスの値（テキスト）を取得
+     * @param element
+     * @return
+     */
+    public String getSelectedText(WebElement element) {
+        return new Select(element).getFirstSelectedOption().getText();
+    }
+
+    /**
+     * 値を初期化してから設定する
+     * @param element
+     * @param val
+     */
+    public void sendKeys(WebElement element,
+                         Object obj) {
+        element.clear();
+        element.sendKeys(obj.toString());
+    }
 }
