@@ -35,10 +35,8 @@ public class SeleniumCapture {
     /** ファイル名：日付フォーマット */
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
-    /** 出力先ディレクトリ：通常時 */
-    private static final Path outputSuccessDir = Paths.get(prop.getString("capture.dir.success"));
-    /** 出力先ディレクトリ：エラー時 */
-    private static final Path outputErrorDir = Paths.get(prop.getString("capture.dir.error"));
+    /** 出力先ディレクトリ */
+    private static final Path outputDir = Paths.get(prop.getString("capture.dir"), getSysDateTime());
 
     /** WebDriver */
     private WebDriver driver = null;
@@ -49,13 +47,9 @@ public class SeleniumCapture {
      * 出力先ディレクトリの生成
      */
     static {
-        if (!outputSuccessDir.toFile().exists()) {
-            logger.info("create capture dir -> {}", outputSuccessDir.toAbsolutePath().normalize());
-            outputSuccessDir.toFile().mkdirs();
-        }
-        if (!outputErrorDir.toFile().exists()) {
-            logger.info("create capture dir -> {}", outputSuccessDir.toAbsolutePath().normalize());
-            outputErrorDir.toFile().mkdirs();
+        if (!outputDir.toFile().exists()) {
+            logger.info("create capture dir -> {}", outputDir.toAbsolutePath().normalize());
+            outputDir.toFile().mkdirs();
         }
     }
 
@@ -68,26 +62,13 @@ public class SeleniumCapture {
     }
 
     /**
-     * キャプチャ取得（名前自動）<br>
-     * （エラー時用）
-     * @throws IOException
-     */
-    public void screenShotError() throws IOException {
-        // 自動ファイル名
-        String fileNm = prefix + getSysDateTime() + IMAGE_EXTENSION;
-        Path path = outputErrorDir.resolve(fileNm);
-
-        screenShot(path);
-    }
-
-    /**
      * キャプチャ取得（名前自動）
      * @throws IOException
      */
     public void screenShot() throws IOException {
         // 自動ファイル名
         String fileNm = prefix + getSysDateTime() + IMAGE_EXTENSION;
-        Path path = outputSuccessDir.resolve(fileNm);
+        Path path = outputDir.resolve(fileNm);
 
         screenShot(path);
     }
@@ -114,7 +95,7 @@ public class SeleniumCapture {
     public void screenShotAlertMsg(Alert alert) throws IOException {
         // 自動ファイル名
         String fileNm = prefix + getSysDateTime() + TEXT_EXTENSION;
-        Path path = outputSuccessDir.resolve(fileNm);
+        Path path = outputDir.resolve(fileNm);
 
         logger.debug("capture -> {}", path.toString());
 
