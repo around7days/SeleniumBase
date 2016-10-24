@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriver.Timeouts;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -128,10 +129,14 @@ public class WebDriverFactory {
          * 暗黙的な待機(秒)の設定
          */
         {
-            String waitSecond = prop.getString("wait.implicit");
-            if (!waitSecond.isEmpty()) {
-                driver.manage().timeouts().implicitlyWait(Integer.valueOf(waitSecond), TimeUnit.SECONDS);
-            }
+            // ページの暗黙的な待機秒（ミリ秒）
+            String waitPageLoadMsec = prop.getString("wait.implicit.msec.pageload");
+            // 要素の暗黙的な待機秒（ミリ秒）
+            String waitElementMsec = prop.getString("wait.implicit.msec.element");
+
+            Timeouts timeouts = driver.manage().timeouts();
+            timeouts.pageLoadTimeout(Long.valueOf(waitPageLoadMsec), TimeUnit.MILLISECONDS);
+            timeouts.implicitlyWait(Long.valueOf(waitElementMsec), TimeUnit.MILLISECONDS);
         }
 
         return driver;

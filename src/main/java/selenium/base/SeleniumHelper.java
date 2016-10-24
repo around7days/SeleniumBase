@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.TargetLocator;
 import org.openqa.selenium.WebElement;
@@ -224,4 +225,51 @@ public class SeleniumHelper {
         element.clear();
         element.sendKeys(obj.toString());
     }
+
+    /**
+     * セレクトボックスを選択（index指定）
+     * @param element
+     * @param index
+     */
+    public void selectByIndex(WebElement element,
+                              int index) {
+        new Select(element).selectByIndex(index);
+    }
+
+    /**
+     * セレクトボックスを選択（value指定）
+     * @param element
+     * @param value
+     */
+    public void selectByValue(WebElement element,
+                              String value) {
+        new Select(element).selectByValue(value);
+    }
+
+    /**
+     * セレクトボックスを選択（text指定）
+     * @param element
+     * @param text
+     */
+    public void selectByText(WebElement element,
+                             String text) {
+        new Select(element).selectByVisibleText(text);
+    }
+
+    /**
+     * 要素の存在チェックを行う<br>
+     * （要素にアクセスしてエラーが出るかどうかで確認）
+     * @param element
+     * @return true：存在する false：存在しない
+     */
+    public boolean exists(WebElement element) {
+        try {
+            element.getText();
+        } catch (NoSuchElementException e) {
+            // エラー自体は握りつぶす
+            return false;
+        }
+        return true;
+    }
+
 }
