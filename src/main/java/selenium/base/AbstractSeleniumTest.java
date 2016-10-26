@@ -53,7 +53,7 @@ public abstract class AbstractSeleniumTest {
         /* Captureの生成 */
         capture = new SeleniumCapture(driver);
         /* Helperの生成 */
-        helper = new SeleniumHelper(driver, baseWindowHandle);
+        helper = new SeleniumHelper(driver);
     }
 
     @Before
@@ -65,6 +65,7 @@ public abstract class AbstractSeleniumTest {
     @After
     public void after() throws Exception {
         /* 初期化 */
+        driver.get("about:blank");
         capture.setPrefix("");
         driver.manage().deleteAllCookies();
         logger.debug("テストケース終了 ------------------------------------------------------------------------------");

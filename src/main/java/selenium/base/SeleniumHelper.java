@@ -7,7 +7,6 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriver.TargetLocator;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -18,14 +17,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class SeleniumHelper {
 
-    /** プロパティ */
-    protected static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
-
     /** WebDriver */
     private WebDriver driver;
-
-    /** BaseWindowHandle */
-    private String baseWindowHandle;
 
     /**
      * コンストラクタ
@@ -33,16 +26,6 @@ public class SeleniumHelper {
      */
     SeleniumHelper(WebDriver driver) {
         this.driver = driver;
-    }
-
-    /**
-     * コンストラクタ
-     * @param driver
-     * @param baseWindowHandle
-     */
-    SeleniumHelper(WebDriver driver, String baseWindowHandle) {
-        this.driver = driver;
-        this.baseWindowHandle = baseWindowHandle;
     }
 
     /**
@@ -66,7 +49,7 @@ public class SeleniumHelper {
      * @param by
      * @return WebElement
      */
-    public WebElement $(By by) {
+    public WebElement find(By by) {
         return driver.findElement(by);
     }
 
@@ -75,41 +58,24 @@ public class SeleniumHelper {
      * @param by
      * @return WebElement List
      */
-    public List<WebElement> $$(By by) {
+    public List<WebElement> finds(By by) {
         return driver.findElements(by);
-    }
-
-    /**
-     * エレメント取得(selectBox)
-     * @param by
-     * @return Select
-     */
-    public Select $select(By by) {
-        return new Select(driver.findElement(by));
     }
 
     /**
      * エレメント取得(alert)
      * @return Alert
      */
-    public Alert $switchToAlert() {
+    public Alert switchToAlert() {
         return driver.switchTo().alert();
-    }
-
-    /**
-     * switchオブジェクトの取得
-     * @return TargetLocator
-     */
-    public TargetLocator $switch() {
-        return driver.switchTo();
     }
 
     /**
      * Frame一覧の取得
      * @return WebElement List
      */
-    public List<WebElement> $$frame() {
-        return $$(By.tagName("frame"));
+    public List<WebElement> findFrames() {
+        return finds(By.tagName("frame"));
     }
 
     /**
@@ -117,7 +83,7 @@ public class SeleniumHelper {
      * @param index
      * @return WebDriver
      */
-    public WebDriver $switchToFrame(int index) {
+    public WebDriver switchToFrame(int index) {
         return driver.switchTo().frame(index);
     }
 
@@ -126,7 +92,7 @@ public class SeleniumHelper {
      * @param nameOrId
      * @return WebDriver
      */
-    public WebDriver $switchToFrame(String nameOrId) {
+    public WebDriver switchToFrame(String nameOrId) {
         return driver.switchTo().frame(nameOrId);
     }
 
@@ -135,7 +101,7 @@ public class SeleniumHelper {
      * @param frameElement
      * @return WebDriver
      */
-    public WebDriver $switchToFrame(WebElement frameElement) {
+    public WebDriver switchToFrame(WebElement frameElement) {
         return driver.switchTo().frame(frameElement);
     }
 
@@ -144,18 +110,8 @@ public class SeleniumHelper {
      * @param frameElement
      * @return WebDriver
      */
-    public WebDriver $switchToParentFrame() {
+    public WebDriver switchToParentFrame() {
         return driver.switchTo().parentFrame();
-    }
-
-    /**
-     * WebDriverWaitの生成<br>
-     * （明示的な待機）
-     * @return WebDriverWait
-     */
-    public WebDriverWait $wait() {
-        String waitDefault = prop.getString("wait.explicit.default");
-        return $wait(Integer.valueOf(waitDefault));
     }
 
     /**
@@ -164,7 +120,7 @@ public class SeleniumHelper {
      * @param seconds 待機秒
      * @return WebDriverWait
      */
-    public WebDriverWait $wait(int seconds) {
+    public WebDriverWait wait(int seconds) {
         return new WebDriverWait(driver, seconds);
     }
 
@@ -176,7 +132,7 @@ public class SeleniumHelper {
      * ３つ以上WindowHandleが存在すると正しく動作しない可能性がある
      * </pre>
      */
-    public void $switchToWindowHandle() {
+    public void switchToWindowHandle() {
         // 現在のハンドルを取得
         String currentHandle = driver.getWindowHandle();
 
@@ -191,10 +147,11 @@ public class SeleniumHelper {
     }
 
     /**
-     * WindowHandleをベースに戻す<br>
+     * WindowHandleを切り替える
+     * @param windowHandle
      */
-    public void $switchToBaseWindowHandle() {
-        driver.switchTo().window(baseWindowHandle);
+    public void switchToWindowHandle(String windowHandle) {
+        driver.switchTo().window(windowHandle);
     }
 
     /**
@@ -220,8 +177,8 @@ public class SeleniumHelper {
      * @param element
      * @param val
      */
-    public void sendKeys(WebElement element,
-                         Object obj) {
+    public void setKeys(WebElement element,
+                        Object obj) {
         element.clear();
         element.sendKeys(obj.toString());
     }

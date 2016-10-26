@@ -1,5 +1,8 @@
 package selenium.base;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.Dimension;
@@ -48,8 +51,9 @@ public class WebDriverFactory {
      * WebDriverの生成
      * @param browser Webブラウザタイプ
      * @return WebDriver
+     * @throws URISyntaxException
      */
-    public static WebDriver create(Browser browser) {
+    public static WebDriver create(Browser browser) throws URISyntaxException {
 
         WebDriver driver = null;
 
@@ -60,7 +64,8 @@ public class WebDriverFactory {
         case IE:
             logger.debug("create driver -> {}", InternetExplorerDriver.class.getName());
             // ドライバー設定
-            System.setProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY, prop.getString("driver.url.ie"));
+            String ieDriverPath = convertClasspathToAbsolutepath(prop.getString("driver.url.ie"));
+            System.setProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY, ieDriverPath);
 
             // オプション設定
             DesiredCapabilities capability = DesiredCapabilities.internetExplorer();
@@ -74,14 +79,16 @@ public class WebDriverFactory {
         case CHROME:
             logger.debug("create driver -> {}", ChromeDriver.class.getName());
             // ドライバー設定
-            System.setProperty(ChromeDriverService.CHROME_DRIVER_EXE_PROPERTY, prop.getString("driver.url.chrome"));
+            String chromeDriverPath = convertClasspathToAbsolutepath(prop.getString("driver.url.chrome"));
+            System.setProperty(ChromeDriverService.CHROME_DRIVER_EXE_PROPERTY, chromeDriverPath);
 
             // オプション設定
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--disable-extensions"); // 拡張機能無効化
+            ChromeOptions chromeOptions = new ChromeOptions();
+            chromeOptions.addArguments("--disable-extensions"); // 拡張機能無効化
+            // chromeOptions.addArguments("--disable-application-cache"); // アプリケーションキャッシュ無効化
 
             // 生成
-            driver = new ChromeDriver(options);
+            driver = new ChromeDriver(chromeOptions);
             break;
 
         case FIREFOX:
@@ -140,5 +147,18 @@ public class WebDriverFactory {
         }
 
         return driver;
+    }
+
+    /**
+     * クラスパスを絶対パスに変換
+     * @param path
+     * @return
+     * @throws URISyntaxException
+     */
+    private static String convertClasspathToAbsolutepath(String path) throws URISyntaxException {
+        String classpath = path.replaceFirst("^classpath:", "");
+        URL url = WebDriverFactory.class.getClassLoader().getResource(classpath);
+        File file = new File(url.toURI());
+        return file.getAbsolutePath();
     }
 }
