@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE logback>
+<!DOCTYPE configuration>
 <configuration>
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<target>System.out</target>
@@ -8,9 +8,11 @@
 		</encoder>
 	</appender>
 
-	<logger name="selenium.base" level="DEBUG" />
+	<logger name="rms.test" level="DEBUG"/>
+	<logger name="selenium.base" level="DEBUG"/>
 
-	<root level="INFO">
+	<root>
+		<level value="INFO" />
 		<appender-ref ref="STDOUT" />
 	</root>
 
