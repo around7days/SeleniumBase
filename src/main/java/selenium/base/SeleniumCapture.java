@@ -9,12 +9,17 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.imageio.ImageIO;
+
 import org.openqa.selenium.Alert;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ru.yandex.qatools.ashot.AShot;
+import ru.yandex.qatools.ashot.Screenshot;
+import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
+import ru.yandex.qatools.ashot.shooting.ShootingStrategy;
 
 /**
  * Captureクラス
@@ -82,8 +87,15 @@ public class SeleniumCapture {
         logger.debug("capture -> {}", path.toString());
 
         // 出力
-        TakesScreenshot screen = (TakesScreenshot) driver;
-        Files.write(path, screen.getScreenshotAs(OutputType.BYTES));
+        // TakesScreenshot screen = (TakesScreenshot) driver;
+        // Files.write(path, screen.getScreenshotAs(OutputType.BYTES));
+
+        // キャプチャ取得
+        ShootingStrategy shootStrategy = ShootingStrategies.viewportPasting(100); // Webページ全体
+        Screenshot screen = new AShot().shootingStrategy(shootStrategy).takeScreenshot(driver);
+
+        // 出力
+        ImageIO.write(screen.getImage(), "jpeg", path.toFile());
     }
 
     /**

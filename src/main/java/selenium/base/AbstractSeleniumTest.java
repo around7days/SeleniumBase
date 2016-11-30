@@ -59,7 +59,9 @@ public abstract class AbstractSeleniumTest {
     @Before
     public void before() throws Exception {
         logger.debug("テストケース開始 ------------------------------------------------------------------------------");
-        capture.setPrefix(this.getClass().getSimpleName() + "#" + testName.getMethodName());
+        String classNm = getSimpleNameContainEnclosingClass(this.getClass());
+        String methodNm = testName.getMethodName();
+        capture.setPrefix(classNm + "#" + methodNm);
     }
 
     @After
@@ -77,6 +79,23 @@ public abstract class AbstractSeleniumTest {
         /* Webブラウザの終了 */
         driver.quit();
         logger.info("処理終了 ---------------------------------------------------------------------------------------");
+    }
+
+    /**
+     * トップレベルクラス名を含むシンプルクラス名の取得<br>
+     * 例）org.test.selenium.UserRegistTest → UserRegistTest<br>
+     * 例）org.test.selenium.UserRegistTest$新規登録テストグループ → UserRegistTest$新規登録テストグループ
+     * @param cls
+     * @return
+     */
+    private String getSimpleNameContainEnclosingClass(Class<?> cls) {
+        String classNm = cls.getName();
+        int idx = classNm.lastIndexOf(".");
+        if (idx != -1) {
+            return classNm.substring(idx + 1, classNm.length());
+        } else {
+            return classNm;
+        }
     }
 
     // // 失敗したときはキャプチャを取得
