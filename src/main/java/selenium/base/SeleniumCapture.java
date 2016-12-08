@@ -33,12 +33,14 @@ public class SeleniumCapture {
     /** プロパティ */
     private static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
 
+    /** 画像タイプ */
+    private static final String IMAGE_TYPE = "jpeg";
     /** ファイル名：拡張子（画像） */
     private static final String IMAGE_EXTENSION = ".jpg";
     /** ファイル名：拡張子（テキスト） */
     private static final String TEXT_EXTENSION = ".txt";
     /** ファイル名：日付フォーマット */
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
 
     /** 出力先ディレクトリ */
     private static final Path outputDir = Paths.get(prop.getString("capture.dir"), getSysDateTime());
@@ -72,7 +74,7 @@ public class SeleniumCapture {
      */
     public void screenShot() throws IOException {
         // 自動ファイル名
-        String fileNm = prefix + getSysDateTime() + IMAGE_EXTENSION;
+        String fileNm = prefix + "_" + getSysDateTime() + IMAGE_EXTENSION;
         Path path = outputDir.resolve(fileNm);
 
         screenShot(path);
@@ -86,16 +88,16 @@ public class SeleniumCapture {
     public void screenShot(Path path) throws IOException {
         logger.debug("capture -> {}", path.toString());
 
-        // 出力
-        // TakesScreenshot screen = (TakesScreenshot) driver;
-        // Files.write(path, screen.getScreenshotAs(OutputType.BYTES));
-
-        // キャプチャ取得
-        ShootingStrategy shootStrategy = ShootingStrategies.viewportPasting(100); // Webページ全体
+        // キャプチャ取得（Webページ全体）
+        ShootingStrategy shootStrategy = ShootingStrategies.viewportPasting(100);
         Screenshot screen = new AShot().shootingStrategy(shootStrategy).takeScreenshot(driver);
 
         // 出力
-        ImageIO.write(screen.getImage(), "jpeg", path.toFile());
+        ImageIO.write(screen.getImage(), IMAGE_TYPE, path.toFile());
+
+        // 出力
+        // TakesScreenshot screen = (TakesScreenshot) driver;
+        // Files.write(path, screen.getScreenshotAs(OutputType.BYTES));
     }
 
     /**
