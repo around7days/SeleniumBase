@@ -19,7 +19,7 @@ dependencies {
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '+'
 
     // junit & selenium
-    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.+'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.1.+'
     compile group: 'junit', name: 'junit', version: '+'
     compile group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '+'
 }
