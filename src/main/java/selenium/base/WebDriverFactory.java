@@ -61,21 +61,6 @@ public class WebDriverFactory {
          * WebDriverの生成
          */
         switch (browser) {
-        case IE:
-            logger.debug("create driver -> {}", InternetExplorerDriver.class.getName());
-            // ドライバー設定
-            String ieDriverPath = convertClasspathToAbsolutepath(prop.getString("driver.url.ie"));
-            System.setProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY, ieDriverPath);
-
-            // オプション設定
-            DesiredCapabilities capability = DesiredCapabilities.internetExplorer();
-            // 保護モードチェックエラースルー
-            capability.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
-
-            // 生成
-            driver = new InternetExplorerDriver(capability);
-            break;
-
         case CHROME:
             logger.debug("create driver -> {}", ChromeDriver.class.getName());
             // ドライバー設定
@@ -89,6 +74,21 @@ public class WebDriverFactory {
 
             // 生成
             driver = new ChromeDriver(chromeOptions);
+            break;
+
+        case IE:
+            logger.debug("create driver -> {}", InternetExplorerDriver.class.getName());
+            // ドライバー設定
+            String ieDriverPath = convertClasspathToAbsolutepath(prop.getString("driver.url.ie"));
+            System.setProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY, ieDriverPath);
+
+            // オプション設定
+            DesiredCapabilities capability = DesiredCapabilities.internetExplorer();
+            // 保護モードチェックエラースルー
+            capability.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
+
+            // 生成
+            driver = new InternetExplorerDriver(capability);
             break;
 
         case FIREFOX:

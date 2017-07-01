@@ -22,10 +22,10 @@ public abstract class AbstractSeleniumTest {
     private static final Logger logger = LoggerFactory.getLogger(AbstractSeleniumTest.class);
 
     /** プロパティ */
-    private static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
+    protected static final SeleniumPropertyManager prop = SeleniumPropertyManager.INSTANCE;
 
     /** 実行ブラウザ */
-    private static final Browser browser = Browser.getEnum(prop.getString("execute.browser"));
+    protected static final Browser browser = Browser.getEnum(prop.getString("execute.browser"));
 
     /** WebDriver */
     protected static WebDriver driver = null;
